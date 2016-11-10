@@ -2,14 +2,14 @@
 The reader of the paper just saw there is a github repo
 
 she installs it with
-pip install github.com/mahnen/gamma_foo_bar
+pip install github.com/mahnen/gamma_limits_sensitivity
 
-then she finds the callable in her path named also gamma_foo_bar,
-as stated in the README
+then she finds the callable in her path named also gamma_limits_sensitivity,
+as stated in the README and wants to try it on an upper limit calculation
 
 she calls it as explained:
 
-   gamma_foo_bar UL --on=10 --off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
+   gamma_limits_sensitivity ul --N_on=10 --N_off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
 
 and some nice plots return
 
@@ -20,7 +20,7 @@ her newly developed telescope is actually capable of, independend of the source
 
 So she calls:
 
-    gamma_foo_bar SENS --s_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
+    gamma_limits_sensitivity sens --s_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
 
 and gets plots
 
@@ -32,10 +32,10 @@ reasonable amount of time
 
 so she calls:
 
-    gamma_foo_bar PREDICT --s_bg=7.1 --alpha=0.2 --f0=1e-12 --df0=1e-13
-        --Gamma=-2.6 --dGamma=0.2 --E0=1e9 --A_eff=<some_path>
+    gamma_limits_sensitivity predict --s_bg=7.1 --alpha=0.2 --f_0=1e-12 --df_0=1e-13
+        --Gamma=-2.6 --dGamma=0.2 --E_0=1e9 --A_eff=<some_path>
 
-and gets some plots again and the time to detection  printed to stdout.
+and gets some plots again and the estimated time to detection printed to stdout.
 
 --------------------------------------------------------------
 '''
@@ -49,15 +49,15 @@ def test_high_level_api_ul():
     story.
 
     '''
-    plots = gls.upper_limit(
-        on=10,
-        off=50,
+    dictionary = gls.upper_limit(
+        N_on=10,
+        N_off=50,
         alpha=0.2,
         l_lim=15,
         A_eff='some_path',
         )
 
-    for plot in plots:
+    for plot in dictionary['plots']:
         assert isinstance(plot, matplotlib.figure.Figure)
 
 
@@ -66,14 +66,14 @@ def test_high_level_api_sens():
     This test tests the cli sens functionality explained in above user story.
 
     '''
-    plots = gls.sensitivity(
+    dictionary = gls.sensitivity(
         s_bg=10,
         alpha=0.2,
         t_obs=10*3600,
         A_eff='some_path',
         )
 
-    for plot in plots:
+    for plot in dictionary['plots']:
         assert isinstance(plot, matplotlib.figure.Figure)
 
 
@@ -90,7 +90,7 @@ def test_high_level_api_predict():
         df_0=1e-13,
         Gamma=-2.6,
         dGamma=0.2,
-        E0=1e9,
+        E_0=1e9,
         A_eff='some_path',
         )
 
