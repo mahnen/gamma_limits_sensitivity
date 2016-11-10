@@ -7,7 +7,7 @@ In order to install, use pip:
 pip install git+https://github.com/mahnen/gamma_limits_sensitivity.git
 ```
 
-Or clone the reop and run the setup.py from there:
+Or clone the repo and run the setup.py from there:
 
 ```
 git clone https://github.com/mahnen/gamma_limits_sensitivity.git
