@@ -3,5 +3,14 @@ This code demonstrates how to calculate integral upper limits and sensitivities 
 
 In order to install, use pip:
 
-`pip install git+https://github.com/mahnen/gamma_limits_sensitivity.git`
+```
+pip install git+https://github.com/mahnen/gamma_limits_sensitivity.git
+```
 
+Or clone the reop and run the setup.py from there:
+
+```
+git clone https://github.com/mahnen/gamma_limits_sensitivity.git
+cd gamma_limits_sensitivity
+pip install .
+```
