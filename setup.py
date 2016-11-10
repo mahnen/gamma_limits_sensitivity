@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='gamm_limits_sensitivity',
+    name='gamma_limits_sensitivity',
     version='0.1',
     description='Calculate integral UL and sensitiv. for g-ray telescopes.',
     url='https://github.com/mahnen/gamma_limits_sensitivity',
