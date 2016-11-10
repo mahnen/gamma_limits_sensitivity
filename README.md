@@ -19,7 +19,7 @@ __How it works__
 
 There are three main commands that **gamma_limits_sensitivity** can excecute. These are:
 - (**ul**): calculate integral upper limits 
-- (**sens**): calculate sensitivity, independent of the source spectrum, given an observation time t_obs
+- (**sens**): calculate sensitivity given an observation time t_obs
 - (**predict**): calculate time to detection, given an uncertain source spectrum (independent normal distributed errors are assumed)
 
 All three use the integral spectral exclusion zone method and the representation of integral limits in the phase space of the power law source emission. Reference: xyz Link 
