@@ -17,34 +17,36 @@ pip install .
 
 __How it works__
 
-The reader of the paper just saw there is a github repo. She finds the callable in her path also named gamma_limits_sensitivity, and wants to try it on an upper limit calculation. She calls it as explained:
+There are three main commands that **gamma_limits_sensitivity** can excecute. These are:
+- calculate upper limits
+- calculate sensitivity
+- calculate time to detection
+
+All three use the integral spectral exclusion zone method and the representation of integral limits in the phase space of the power law source emission. Reference: xyz Link 
 
 ```
-gamma_limits_sensitivity ul --N_on=10 --N_off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
+Usage:
+  gamma_limits_sensitivity ul --N_on=<arg> --N_off=<arg> --alpha=<arg> --l_lim=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
+  gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity (-h | --help)
+  gamma_limits_sensitivity --version
+
+Options:
+  --N_on=<arg>          Number of events in On region
+  --N_off=<arg>         Number of events in Off region
+  --alpha=<arg>         Ratio of On to Off region exposures
+  --l_lim=<arg>         Signal count limit
+  --A_eff=<file>        File with samples from the effective area after all cuts
+  --out=<path>          Optional argument for specifying the output directory
+  --s_bg=<arg>          Estimated rate of backgroud in one On region
+  --t_obs=<arg>         Observation time / s
+  --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
+  --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
+  --Gamma=<arg>         Emission power law index (< 0)
+  --dGamma=<arg>        Error of the emission power law index (1 sigma)
+  --E_0=<arg>           Reference energy / eV
+  -h --help             Show this screen.
+  --version             Show version.
+'''
 ```
-
-and some nice plots return.
-
---------------------------------------------------------------
-
-A sunny day ... her boss is really interested in knowing what her newly developed telescope is actually capable of, independent of the source. So she calls:
-
-```
-gamma_limits_sensitivity sens --s_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
-```
-
-and gets plots.
-
---------------------------------------------------------------
-
-Another days she likes an undicsovered source very much and would like to know if her gamma ray telescope can detect this source in a reasonable amount of time. So she calls:
-
-```
-gamma_limits_sensitivity predict --s_bg=7.1 --alpha=0.2 --f_0=1e-12 --df_0=1e-13 --Gamma=-2.6 --dGamma=0.2 --E_0=1e9 --A_eff=<some_path>
-```
-
-and gets some plots again and the estimated time to detection printed to stdout.
-
---------------------------------------------------------------
-
-All calls to gamma_limits_sensitivity can be appended with an out path (--out=\<out_path\>). In this way, all plots are saved, together with their data, in \<out_path\>. 
