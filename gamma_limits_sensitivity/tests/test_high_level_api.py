@@ -42,6 +42,7 @@ and gets some plots again and the estimated time to detection printed to stdout.
 import gamma_limits_sensitivity as gls
 import matplotlib
 
+
 def test_high_level_api_ul():
     '''
     This test tests the cli upper limit functionality explained in above user

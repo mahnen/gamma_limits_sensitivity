@@ -53,7 +53,7 @@ def main():
                 t_obs=float(arguments['--t_obs']),
                 A_eff=arguments['--A_eff'],
             )
-        
+
         elif arguments['predict']:
             dictionary = gls.predict(
                 s_bg=float(arguments['--s_bg']),
