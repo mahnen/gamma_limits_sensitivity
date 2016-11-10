@@ -27,7 +27,7 @@ and some nice plots return.
 
 --------------------------------------------------------------
 
-A sunny day ... her boss is really interessted in knowing what her newly developed telescope is actually capable of, independent of the source. So she calls:
+A sunny day ... her boss is really interested in knowing what her newly developed telescope is actually capable of, independent of the source. So she calls:
 
 ```
 gamma_limits_sensitivity sens --s_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
