@@ -21,6 +21,7 @@ setup(
         'numpy',
         'scipy',
         'matplotlib'
+        'docopt'
     },
     tests_require=['pytest']
 )
