@@ -12,6 +12,11 @@ setup(
         'gamma_limits_sensitivity'
     ],
     package_data={'gamma_limits_sensitivity': ['resources/*']},
+    entry_points={
+        'console_scripts': [
+            'gamma_limits_sensitivity = gamma_limits_sensitivity.__main__:main'
+        ]
+    },
     install_requires={
         'numpy',
         'scipy',
