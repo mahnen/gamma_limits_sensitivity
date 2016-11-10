@@ -2,9 +2,7 @@
 This is the hard working code in order to calculate ULs, sensitivities,
 and time to detections.
 '''
-import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('Agg')
 
 def upper_limit(N_on, N_off, alpha, l_lim, A_eff):
     figures = [plt.figure()]
