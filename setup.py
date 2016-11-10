@@ -20,7 +20,7 @@ setup(
     install_requires={
         'numpy',
         'scipy',
-        'matplotlib'
+        'matplotlib',
         'docopt'
     },
     tests_require=['pytest']
