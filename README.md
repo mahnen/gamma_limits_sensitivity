@@ -47,4 +47,4 @@ and gets some plots again and the estimated time to detection printed to stdout.
 
 --------------------------------------------------------------
 
-All calls to gamma_limits_sensitivity can be appended with an out path (--out=\<out_path\>.). In this way, all plots are saved, together with their data, in \<out_path\>. 
+All calls to gamma_limits_sensitivity can be appended with an out path (--out=\<out_path\>). In this way, all plots are saved, together with their data, in \<out_path\>. 
