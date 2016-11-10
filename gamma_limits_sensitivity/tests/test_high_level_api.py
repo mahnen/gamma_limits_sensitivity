@@ -41,7 +41,7 @@ and gets some plots again and the estimated time to detection printed to stdout.
 '''
 import gamma_limits_sensitivity as gls
 import matplotlib
-
+matplotlib.use('Agg') # needed to remove x-based rendering in cont. integration testing
 
 def test_high_level_api_ul():
     '''
