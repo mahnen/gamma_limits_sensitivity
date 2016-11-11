@@ -2,19 +2,17 @@
 This is the main of the ul method paper demonstration
 
 Usage:
-  gamma_limits_sensitivity ul --N_on=<arg> --N_off=<arg> --alpha=<arg> --l_lim=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity ul --l_lim=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
   gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity (-h | --help)
   gamma_limits_sensitivity --version
 
 Options:
-  --N_on=<arg>          Number of events in On region
-  --N_off=<arg>         Number of events in Off region
-  --alpha=<arg>         Ratio of On to Off region exposures
-  --l_lim=<arg>         Signal count limit
+  --l_lim=<arg>         Signal count limit, estimated from N_on, N_off, and alpha
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
+  --alpha=<arg>         Ratio of On to Off region exposures
   --s_bg=<arg>          Estimated rate of backgroud in On region / h
   --t_obs=<arg>         Observation time / h
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
@@ -39,9 +37,6 @@ def main():
     try:
         if arguments['ul']:
             dictionary = gls.upper_limit(
-                N_on=int(arguments['--N_on']),
-                N_off=int(arguments['--N_off']),
-                alpha=float(arguments['--alpha']),
                 l_lim=float(arguments['--l_lim']),
                 A_eff=arguments['--A_eff'],
             )

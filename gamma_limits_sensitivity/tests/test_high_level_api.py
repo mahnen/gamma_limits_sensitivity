@@ -42,6 +42,8 @@ and gets some plots again and the estimated time to detection printed to stdout.
 import gamma_limits_sensitivity as gls
 import matplotlib
 
+from helper_functions_for_tests import get_A_eff_paths
+
 
 def test_high_level_api_ul():
     '''
@@ -49,12 +51,11 @@ def test_high_level_api_ul():
     story.
 
     '''
+    A_eff_path = get_A_eff_paths()[0]
+
     dictionary = gls.upper_limit(
-        N_on=10,
-        N_off=50,
-        alpha=0.2,
-        l_lim=15,
-        A_eff='some_path',
+        l_lim=15.,
+        A_eff=A_eff_path,
         )
 
     for plot in dictionary['plots']:
@@ -66,11 +67,13 @@ def test_high_level_api_sens():
     This test tests the cli sens functionality explained in above user story.
 
     '''
+    A_eff_path = get_A_eff_paths()[1]
+
     dictionary = gls.sensitivity(
         s_bg=10,
         alpha=0.2,
         t_obs=10*3600,
-        A_eff='some_path',
+        A_eff=A_eff_path,
         )
 
     for plot in dictionary['plots']:
@@ -83,6 +86,8 @@ def test_high_level_api_predict():
     in above user story.
 
     '''
+    A_eff_path = get_A_eff_paths()[1]
+    
     dictionary = gls.predict(
         s_bg=10,
         alpha=0.2,
@@ -91,7 +96,7 @@ def test_high_level_api_predict():
         Gamma=-2.6,
         dGamma=0.2,
         E_0=1e9,
-        A_eff='some_path',
+        A_eff=A_eff_path,
         )
 
     for plot in dictionary['plots']:

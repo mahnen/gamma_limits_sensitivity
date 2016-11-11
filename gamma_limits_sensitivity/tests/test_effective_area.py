@@ -1,34 +1,11 @@
 '''
-The logic behind the UL calculation is the following:
-
-1) read the effective area from a file
-
-2) interpolate the effective area 
-
-3) calculate the ul integral spectral exclusion zone
-    
-    3.1) make plots: 
-    
-        3.1.1) in phasespace
-
-        3.1.2) in spectrum
-
-        3.1.3) the efective area for crosscheck
-
-    3.2.)   if output directory is specified, save everything there, 
-            including a human readable csv file with the 
-            integral spectral exclusion zone data
-
-4) if no output path was specified, return the plots to the main
+Here are tests for checking the integrity 
+of the A_eff interpolation and test data
 '''
 import gamma_limits_sensitivity as gls
 import scipy
 
-
-def get_Aeff_list():
-    A_eff_paths = [ gls.__path__[0]+relpath for relpath in gls.get_A_eff_test_relative_paths()  ]
-    A_eff_list = [ gls.get_effective_area(path) for path in A_eff_paths ]
-    return A_eff_list
+from helper_functions_for_tests import get_A_eff_list, get_random_on_off_experiment_no_source
 
 
 def test_get_effective_area():
@@ -37,7 +14,7 @@ def test_get_effective_area():
     '''
 
     # build path to test files 
-    A_eff_list = get_Aeff_list()
+    A_eff_list = get_A_eff_list()
 
     for A_eff in A_eff_list:
         assert isinstance(A_eff, scipy.interpolate.interpolate.interp1d) # check that it is interpolation function
@@ -59,7 +36,7 @@ def test_effective_area_interpolation():
     .
     .
     '''
-    A_eff_list = get_Aeff_list()
+    A_eff_list = get_A_eff_list()
 
     for A_eff in A_eff_list:
         assert A_eff.x.min() > -3   # check that energy is > 1 MeV
