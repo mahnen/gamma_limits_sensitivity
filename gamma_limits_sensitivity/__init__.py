@@ -37,6 +37,7 @@ def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, A_eff):
 
     return dictionary
 
+
 def get_A_eff_test_relative_paths():
     A_eff_test_relative_paths = [
         '/resources/A_eff/MAGIC_lowZd_Ecut_300GeV.dat',
@@ -44,6 +45,7 @@ def get_A_eff_test_relative_paths():
         '/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
     ]
     return A_eff_test_relative_paths
+
 
 def get_effective_area(A_eff_path):
     A_eff_data = np.loadtxt(A_eff_path, delimiter=',')

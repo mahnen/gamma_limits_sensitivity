@@ -11,7 +11,7 @@ setup(
     packages=[
         'gamma_limits_sensitivity'
     ],
-    package_data={'gamma_limits_sensitivity': ['resources/*']},
+    package_data={'gamma_limits_sensitivity': ['resources/A_eff/*']},
     entry_points={
         'console_scripts': [
             'gamma_limits_sensitivity = gamma_limits_sensitivity.__main__:main'

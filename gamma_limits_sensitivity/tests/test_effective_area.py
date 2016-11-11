@@ -22,7 +22,6 @@ The logic behind the UL calculation is the following:
 4) if no output path was specified, return the plots to the main
 '''
 import gamma_limits_sensitivity as gls
-import numpy as np
 import scipy
 
 
