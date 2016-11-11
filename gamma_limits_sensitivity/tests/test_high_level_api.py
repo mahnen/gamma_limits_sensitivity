@@ -33,7 +33,7 @@ reasonable amount of time
 so she calls:
 
     gamma_limits_sensitivity predict --s_bg=7.1 --alpha=0.2 --f_0=1e-12 --df_0=1e-13
-        --Gamma=-2.6 --dGamma=0.2 --E_0=1e9 --A_eff=<some_path>
+        --Gamma=-2.6 --dGamma=0.2 --E_0=1. --A_eff=<some_path>
 
 and gets some plots again and the estimated time to detection printed to stdout.
 
@@ -54,6 +54,7 @@ def test_high_level_api_ul():
     A_eff_path = get_A_eff_paths()[0]
 
     dictionary = gls.upper_limit(
+        t_obs=1*3600,
         l_lim=15.,
         A_eff=A_eff_path,
         )
@@ -95,7 +96,7 @@ def test_high_level_api_predict():
         df_0=1e-13,
         Gamma=-2.6,
         dGamma=0.2,
-        E_0=1e9,
+        E_0=1.,  # in TeV 
         A_eff=A_eff_path,
         )
 

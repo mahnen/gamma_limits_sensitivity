@@ -2,7 +2,7 @@
 This is the main of the ul method paper demonstration
 
 Usage:
-  gamma_limits_sensitivity ul --l_lim=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity ul --l_lim=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
   gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity (-h | --help)
@@ -10,16 +10,16 @@ Usage:
 
 Options:
   --l_lim=<arg>         Signal count limit, estimated from N_on, N_off, and alpha
+  --t_obs=<arg>         Observation time / s
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
   --alpha=<arg>         Ratio of On to Off region exposures
-  --s_bg=<arg>          Estimated rate of backgroud in On region / h
-  --t_obs=<arg>         Observation time / h
+  --s_bg=<arg>          Estimated rate of backgroud in On region / s
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
   --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
   --Gamma=<arg>         Emission power law index (< 0)
   --dGamma=<arg>        Error of the emission power law index (1 sigma)
-  --E_0=<arg>           Reference energy / eV
+  --E_0=<arg>           Reference energy / TeV
   -h --help             Show this screen.
   --version             Show version.
 '''

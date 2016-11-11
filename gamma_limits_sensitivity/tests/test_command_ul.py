@@ -31,7 +31,7 @@ def test_get_ul_phasespace_figure():
     A_eff_list = get_A_eff_list()
     __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
 
-    ul_phasespace_figures = [ gls.get_ul_phasespace_figure(l_lim, A_eff_interpol) for A_eff_interpol in A_eff_list ]
+    ul_phasespace_figures = [ gls.get_ul_phasespace_figure(1., l_lim, A_eff_interpol) for A_eff_interpol in A_eff_list ]
 
     for plot in ul_phasespace_figures:
         assert isinstance(plot, matplotlib.figure.Figure)
@@ -44,7 +44,7 @@ def test_get_ul_spectrum_figure():
     A_eff_list = get_A_eff_list()
     __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
 
-    ul_spectrum_figures = [ gls.get_ul_spectrum_figure(l_lim, A_eff_interpol) for A_eff_interpol in A_eff_list ]
+    ul_spectrum_figures = [ gls.get_ul_spectrum_figure(1., l_lim, A_eff_interpol) for A_eff_interpol in A_eff_list ]
 
     for plot in ul_spectrum_figures:
         assert isinstance(plot, matplotlib.figure.Figure)
