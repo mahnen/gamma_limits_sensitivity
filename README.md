@@ -39,7 +39,7 @@ Options:
   --l_lim=<arg>         Signal count limit
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
-  --s_bg=<arg>          Estimated rate of backgroud in one On region / h
+  --s_bg=<arg>          Estimated rate of backgroud in On region / h
   --t_obs=<arg>         Observation time / h
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
   --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
