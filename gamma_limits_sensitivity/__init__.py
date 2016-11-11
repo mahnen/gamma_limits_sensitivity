@@ -62,7 +62,7 @@ def get_effective_area(A_eff_path):
     # interpolate the data points, every energy outside definition range 
     # from the data file is assumed to have 0 effective area
     A_eff_interpol = interpolate.interp1d(
-        A_eff_data[:,0]+9.,  # data is given in GeV, convert to eV by adding 9  
+        A_eff_data[:,0],
         A_eff_data[:,1], 
         bounds_error=False, 
         fill_value=0.

@@ -39,7 +39,7 @@ def test_effective_area_interpolation():
     A_eff_list = get_A_eff_list()
 
     for A_eff in A_eff_list:
-        assert A_eff.x.min() > 6    # check that log10(energy/eV) is > 1 MeV
-        assert A_eff.x.max() < 16   # check that log10(energy/eV) is < 10000 TeV
-        assert A_eff.y.min() >= 0   # check that effective area is positive
-        assert A_eff.y.max() < 5e18 # check that effective area is smaller than area of earth's surface
+        assert A_eff.x.min() > -6    # check that log10(energy/TeV) is > 1 MeV
+        assert A_eff.x.max() < 4   # check that log10(energy/TeV) is < 10000 TeV
+        assert A_eff.y.min() >= 0   # check that effective area/cm^2 is positive
+        assert A_eff.y.max() < 5e18 # check that effective area/cm^2 is smaller than area of earth's surface
