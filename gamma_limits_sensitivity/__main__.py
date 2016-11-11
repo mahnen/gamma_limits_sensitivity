@@ -26,21 +26,28 @@ Options:
 from docopt import docopt
 import pkg_resources
 import gamma_limits_sensitivity as gls
+import matplotlib.pyplot as plt
 
 
 def main():
     version = pkg_resources.require("gamma_limits_sensitivity")[0].version
     arguments = docopt(__doc__, version=version)
-    print(arguments)
-
+    
     # run functions according to desired mode: [UL, SENS, PREDICT]
     try:
         if arguments['ul']:
             dictionary = gls.upper_limit(
-                t_obs=float(arguments['--t_obs'])
+                t_obs=float(arguments['--t_obs']),
                 l_lim=float(arguments['--l_lim']),
                 A_eff=arguments['--A_eff'],
             )
+
+            if arguments['--out'] is None:
+              plt.show()
+            else: 
+              for i,plot in enumerate(dictionary['plots']):
+                plot.savefig(arguments['--out']+str(i)+'.png', bbox_inches='tight')
+                plot.savefig(arguments['--out']+str(i)+'.pdf', bbox_inches='tight')
 
         elif arguments['sens']:
             dictionary = gls.sensitivity(
