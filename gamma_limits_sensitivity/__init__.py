@@ -11,20 +11,16 @@ import os
 def upper_limit(l_lim, A_eff):
     A_eff_interpol = get_effective_area(A_eff)
 
-#     # make the phase space plot figure
-#     fig_phasespace_ul = get_phasespace_figure_ul(N_on, N_off, alpha, l_lim, A_eff_interpol)
-#     fig_spectrum_ul = get_spectrum_figure_ul(N_on, N_off, alpha, l_lim, A_eff_interpol)
-#     fig_A_eff = get_A_eff_figure(A_eff_interpol)
+    # make the figures
+    figures = [
+        get_ul_phasespace_figure(l_lim, A_eff_interpol),
+        get_ul_spectrum_figure(l_lim, A_eff_interpol),
+        get_A_eff_figure(A_eff_interpol)
+        ]
 
-    figures = [plt.figure()]
     dictionary = {
         'plots': figures
         }
-
-    # plots: 
-    #   1) effective area
-    #   2) phase space result
-    #   3) integral spectral exclusion zune
 
     return dictionary
 
@@ -74,12 +70,12 @@ def get_effective_area(A_eff_path):
     return A_eff_interpol
 
 
-def get_phasespace_figure_ul(l_lim, A_eff_interpol):
+def get_ul_phasespace_figure(l_lim, A_eff_interpol):
     figure = plt.figure()
     return figure
 
 
-def get_spectrum_figure_ul(l_lim, A_eff_interpol):
+def get_ul_spectrum_figure(l_lim, A_eff_interpol):
     figure = plt.figure()
     return figure
 

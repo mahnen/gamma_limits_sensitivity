@@ -86,7 +86,7 @@ def test_high_level_api_predict():
     in above user story.
 
     '''
-    A_eff_path = get_A_eff_paths()[1]
+    A_eff_path = get_A_eff_paths()[2]
     
     dictionary = gls.predict(
         s_bg=10,
