@@ -22,7 +22,7 @@ There are three main commands that **gamma_limits_sensitivity** can excecute. Th
 - (**sens**): calculate sensitivity given an observation time t_obs
 - (**predict**): calculate time to detection, given an uncertain source spectrum (independent normal distributed errors are assumed)
 
-All three use the integral spectral exclusion zone method and the representation of integral limits in the phase space of the power law source emission. Reference: xyz Link 
+[comment]: # "All three use the integral spectral exclusion zone method and the representation of integral limits in the phase space of the power law source emission. Reference: xyz Link "
 
 ```
 Usage:
