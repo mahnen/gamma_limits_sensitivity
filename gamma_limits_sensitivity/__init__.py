@@ -77,12 +77,23 @@ def get_ul_phasespace_figure(t_obs, l_lim, A_eff_interpol, E_0=1.):
     # determine parameter plot ranges
     Gamma = -2.6  
     f_0 = get_ul_f_0(t_obs, l_lim, A_eff_interpol, E_0, Gamma)
-    f_0_limits, Gamma_limits = get_f_0_Gamma_plot_box(f_0, Gamma)
+    f_0_limits, Gamma_limits = get_f_0_Gamma_limits(f_0, Gamma)
     f_0_mesh, Gamma_mesh = get_f_0_Gamma_mesh(f_0_limits, Gamma_limits)
     
     #lambda_s_mesh = plot_lambda_s(f_0_mesh, Gamma_mesh, E_0, A_eff_interpol, t_obs)
 
     return figure
+
+
+def get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol):
+    figure = plt.figure()
+    return figure
+
+
+def get_A_eff_figure(A_eff_interpol):
+    figure = plt.figure()
+    return figure
+
 
 # returns the definition range of the interpolated effective area function 
 # and a bit more, units: TeV
@@ -90,11 +101,11 @@ def get_energy_range(A_eff_interpol):
     return np.power(10,np.array([A_eff_interpol.x.min()*0.999, A_eff_interpol.x.max()*1.001]))
 
 
-def get_f_0_Gamma_plot_box(f_0, Gamma):
+def get_f_0_Gamma_limits(f_0, Gamma):
     f_0_limits = [f_0*0.1, f_0*1.9]
     Gamma_limits = [ Gamma-1., Gamma+1. ]
-    if Gamma_limits[0] < 0: 
-        Gamma_limits[0] = 0
+    if Gamma_limits[1] > 0: 
+        Gamma_limits[1] = 0.
     return f_0_limits, Gamma_limits
 
 
@@ -119,21 +130,11 @@ def get_ul_f_0(t_obs, l_lim, A_eff_interpol, E_0, Gamma):
 def effective_area_averaged_flux(Gamma, E_0, A_eff_interpol):
     energy_range = get_energy_range(A_eff_interpol)
     integrand = lambda x: power_law( x, f_0=1., Gamma=Gamma, E_0=E_0 )*A_eff_interpol(np.log10(x))#*10.
-    return integrate.quad(integrand, energy_range[0], energy_range[1],limit=1000,full_output=1)[0]
+    return integrate.quad(integrand, energy_range[0], energy_range[1], limit=1000, full_output=1)[0]
 
 
 def power_law( E, f_0, Gamma, E_0=1. ):
-    return f_0*( E/E_0 )**(Gamma)
-
-
-def get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol):
-    figure = plt.figure()
-    return figure
-
-
-def get_A_eff_figure(A_eff_interpol):
-    figure = plt.figure()
-    return figure
+    return f_0*(E/E_0)**(Gamma)
 
 '''
 def plot_lines_of_constant_measured_counts(

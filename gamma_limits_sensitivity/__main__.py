@@ -37,6 +37,7 @@ def main():
     try:
         if arguments['ul']:
             dictionary = gls.upper_limit(
+                t_obs=float(arguments['--t_obs'])
                 l_lim=float(arguments['--l_lim']),
                 A_eff=arguments['--A_eff'],
             )
