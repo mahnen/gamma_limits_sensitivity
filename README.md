@@ -26,27 +26,24 @@ There are three main commands that **gamma_limits_sensitivity** can excecute. Th
 
 ```
 Usage:
-  gamma_limits_sensitivity ul --N_on=<arg> --N_off=<arg> --alpha=<arg> --l_lim=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity ul --l_lim=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
   gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity (-h | --help)
   gamma_limits_sensitivity --version
 
 Options:
-  --N_on=<arg>          Number of events in On region
-  --N_off=<arg>         Number of events in Off region
-  --alpha=<arg>         Ratio of On to Off region exposures
-  --l_lim=<arg>         Signal count limit
+  --l_lim=<arg>         Signal count limit, estimated from N_on, N_off, and alpha
+  --t_obs=<arg>         Observation time / s
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
-  --s_bg=<arg>          Estimated rate of backgroud in On region / h
-  --t_obs=<arg>         Observation time / h
+  --alpha=<arg>         Ratio of On to Off region exposures
+  --s_bg=<arg>          Estimated rate of backgroud in On region / s
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
   --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
   --Gamma=<arg>         Emission power law index (< 0)
   --dGamma=<arg>        Error of the emission power law index (1 sigma)
-  --E_0=<arg>           Reference energy / eV
+  --E_0=<arg>           Reference energy / TeV
   -h --help             Show this screen.
   --version             Show version.
-'''
 ```
