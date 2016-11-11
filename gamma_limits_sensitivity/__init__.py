@@ -9,12 +9,12 @@ import numpy as np
 import os
 
 
-def upper_limit(t_obs, l_lim, A_eff):
+def upper_limit(t_obs, l_lim, A_eff, plot_resolution=30):
     A_eff_interpol = get_effective_area(A_eff)
 
     # make the figures
     figures = [
-        get_ul_phasespace_figure(t_obs, l_lim, A_eff_interpol),
+        get_ul_phasespace_figure(t_obs, l_lim, A_eff_interpol, pixels_per_line=plot_resolution),
         get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol),
         get_A_eff_figure(A_eff_interpol)
         ]
@@ -71,16 +71,16 @@ def get_effective_area(A_eff_path):
     return A_eff_interpol
 
 
-def get_ul_phasespace_figure(t_obs, l_lim, A_eff_interpol, E_0=1.):
+def get_ul_phasespace_figure(t_obs, l_lim, A_eff_interpol, E_0=1., pixels_per_line=30):
     figure = plt.figure()
 
     # determine parameter plot ranges
     Gamma = -2.6  
     f_0 = get_ul_f_0(t_obs, l_lim, A_eff_interpol, E_0, Gamma)
     f_0_limits, Gamma_limits = get_f_0_Gamma_limits(f_0, Gamma)
-    f_0_mesh, Gamma_mesh = get_f_0_Gamma_mesh(f_0_limits, Gamma_limits)
+    f_0_mesh, Gamma_mesh = get_f_0_Gamma_mesh(f_0_limits, Gamma_limits, pixels_per_line)
     
-    #lambda_s_mesh = plot_lambda_s(f_0_mesh, Gamma_mesh, E_0, A_eff_interpol, t_obs)
+    lambda_s_mesh = plot_lambda_s(f_0_mesh, Gamma_mesh, E_0, A_eff_interpol, t_obs)
 
     return figure
 
@@ -109,7 +109,7 @@ def get_f_0_Gamma_limits(f_0, Gamma):
     return f_0_limits, Gamma_limits
 
 
-def get_f_0_Gamma_mesh(f_0_limits, Gamma_limits, pixels_per_line=30):
+def get_f_0_Gamma_mesh(f_0_limits, Gamma_limits, pixels_per_line):
     f_0_stepsize = (f_0_limits[1]-f_0_limits[0])/pixels_per_line
     gamma_stepsize = (Gamma_limits[1]-Gamma_limits[0])/pixels_per_line
 
@@ -136,56 +136,40 @@ def effective_area_averaged_flux(Gamma, E_0, A_eff_interpol):
 def power_law( E, f_0, Gamma, E_0=1. ):
     return f_0*(E/E_0)**(Gamma)
 
-'''
-def plot_lines_of_constant_measured_counts(
-    Aeff,
-    f0_limits = [2.6e-11, 5.4e-11], 
-    alpha_limits = [-3.45, -2.6], 
-    E_0=150, 
-    energy_range=[10,50000],
-    ton=100.,
-    pixels_per_line=30,
-    levels = 10,
+
+def plot_lambda_s(
+    f_0_mesh, 
+    Gamma_mesh, 
+    E_0, 
+    A_eff_interpol, 
+    t_obs,
+    n_levels = 7,
     linestyles = 'dashed',
     linewidths = 1,
-    colors = 'k',
-    plot_color=False
-    ):
-    
-    f0_stepsize = (f0_limits[1]-f0_limits[0])/pixels_per_line
-    alpha_stepsize = (alpha_limits[1]-alpha_limits[0])/pixels_per_line
+    colors = 'k'):
 
-    f0_stepsize = f0_stepsize+f0_stepsize*1e-9
-    alpha_stepsize = alpha_stepsize+alpha_stepsize*1e-9
+    pixels_per_line = np.shape(f_0_mesh)[0]
 
-    f0_buf = np.arange(f0_limits[0], f0_limits[1], f0_stepsize)
-    alpha_buf = np.arange(alpha_limits[1], alpha_limits[0], -alpha_stepsize)
-    F0, Alpha = np.meshgrid(f0_buf, alpha_buf)
-    
-    N_per_ton = np.array([ [ counts_in_ton_time(
-        F0[i,j],
-        Alpha[i,j],
+    lambda_s = np.array([ [ t_obs*f_0_mesh[i,j]*effective_area_averaged_flux(
+        Gamma_mesh[i,j],
         E_0=E_0,
-        Aeff=Aeff,
-        energy_range=energy_range,
-        ton=ton) for j in range(pixels_per_line) ] for i in range(pixels_per_line) ])
+        A_eff_interpol=A_eff_interpol
+        ) for j in range(pixels_per_line) ] for i in range(pixels_per_line) ])
 
-    # figure = plt.figure()
-    if plot_color:
-        im = plt.imshow(N_per_ton, cmap=plt.cm.YlOrRd, extent=(F0[0][0], F0[0][-1], Alpha[-1][0], Alpha[0][0]),aspect='auto')
-    cset = plt.contour(F0,
-        Alpha,
-        N_per_ton,        
+    lambda_s_median = np.median(lambda_s.flatten())
+    levels = [ lambda_s_median/((1.5)**((n_levels/2)-i)) for i in range(n_levels) ]
+
+    cset = plt.contour(f_0_mesh,
+        Gamma_mesh,
+        lambda_s,        
         levels = levels, 
         linestyles = linestyles,
         linewidths = linewidths,
         colors = colors)
-    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
-    if plot_color:
-        plt.colorbar(im)  
 
-    plt.title('signal counts per %1.1f h, E$_0$=%1.1f GeV assuming power law'%(ton,E_0))
+    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
+
+    plt.title('signal counts per %1.1f h, E$_0$=%1.1f TeV assuming power law'%(t_obs,E_0))
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
-    return F0,Alpha,N_per_ton
-'''
+    return lambda_s

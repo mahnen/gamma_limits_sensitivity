@@ -30,7 +30,7 @@ def test_f_0_Gamma_mesh():
 	Gamma_test = -2.6
 
 	f_0_lim, Gamma_lim = gls.get_f_0_Gamma_limits(f_0_test, Gamma_test)
-	f_0_mesh, Gamma_mesh = gls.get_f_0_Gamma_mesh(f_0_lim, Gamma_lim)
+	f_0_mesh, Gamma_mesh = gls.get_f_0_Gamma_mesh(f_0_lim, Gamma_lim, pixels_per_line=30)
 
 	assert f_0_lim[0] < f_0_test
 	assert f_0_lim[1] > f_0_test

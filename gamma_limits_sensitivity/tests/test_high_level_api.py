@@ -57,6 +57,7 @@ def test_high_level_api_ul():
         t_obs=1*3600,
         l_lim=15.,
         A_eff=A_eff_path,
+        plot_resolution=3
         )
 
     for plot in dictionary['plots']:
