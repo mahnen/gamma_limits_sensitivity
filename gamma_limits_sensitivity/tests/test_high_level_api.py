@@ -89,7 +89,7 @@ def test_high_level_api_predict():
 
     '''
     A_eff_path = get_A_eff_paths()[2]
-    
+
     dictionary = gls.predict(
         s_bg=10,
         alpha=0.2,
@@ -97,7 +97,7 @@ def test_high_level_api_predict():
         df_0=1e-13,
         Gamma=-2.6,
         dGamma=0.2,
-        E_0=1.,  # in TeV 
+        E_0=1.,  # in TeV
         A_eff=A_eff_path,
         )
 

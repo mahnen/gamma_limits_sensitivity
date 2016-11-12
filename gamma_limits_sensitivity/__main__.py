@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 def main():
     version = pkg_resources.require("gamma_limits_sensitivity")[0].version
     arguments = docopt(__doc__, version=version)
-    
+
     # run functions according to desired mode: [UL, SENS, PREDICT]
     try:
         if arguments['ul']:
@@ -43,11 +43,13 @@ def main():
             )
 
             if arguments['--out'] is None:
-              plt.show()
-            else: 
-              for i,plot in enumerate(dictionary['plots']):
-                plot.savefig(arguments['--out']+str(i)+'.png', bbox_inches='tight')
-                plot.savefig(arguments['--out']+str(i)+'.pdf', bbox_inches='tight')
+                plt.show()
+            else:
+                for i, plot in enumerate(dictionary['plots']):
+                    plot.savefig(
+                        arguments['--out']+str(i)+'.png', bbox_inches='tight')
+                    plot.savefig(
+                        arguments['--out']+str(i)+'.pdf', bbox_inches='tight')
 
         elif arguments['sens']:
             dictionary = gls.sensitivity(
@@ -70,7 +72,9 @@ def main():
             )
 
         else:
-            print('Unrecognized command option, please use one of: [ul, sens, predict]')
+            print(
+                'Unrecognized command option, '
+                'please use one of: [ul, sens, predict]')
 
     except docopt.DocoptExit as e:
         print(e)

@@ -1,11 +1,14 @@
 '''
-Here are tests for checking the integrity 
+Here are tests for checking the integrity
 of the A_eff interpolation and test data
 '''
 import gamma_limits_sensitivity as gls
 import scipy
 
-from helper_functions_for_tests import get_A_eff_list, get_random_on_off_experiment_no_source
+from helper_functions_for_tests import (
+    get_A_eff_list,
+    get_random_on_off_experiment_no_source
+    )
 
 
 def test_get_effective_area():
@@ -13,19 +16,22 @@ def test_get_effective_area():
     This test checks if the effective area is an interpolated function
     '''
 
-    # build path to test files 
+    # build path to test files
     A_eff_list = get_A_eff_list()
 
     for A_eff in A_eff_list:
-        assert isinstance(A_eff, scipy.interpolate.interpolate.interp1d) # check that it is interpolation function
+        # check that it is interpolation function
+        assert isinstance(
+            A_eff,
+            scipy.interpolate.interpolate.interp1d)
 
 
 def test_effective_area_interpolation():
     '''
     This test checks if the interpolated effective area is
-    in a sensible range of values. The data mus have the following 
+    in a sensible range of values. The data mus have the following
     structure:
-    
+
     # comment
     # comment
     # comment
@@ -39,7 +45,11 @@ def test_effective_area_interpolation():
     A_eff_list = get_A_eff_list()
 
     for A_eff in A_eff_list:
-        assert A_eff.x.min() > -6    # check that log10(energy/TeV) is > 1 MeV
-        assert A_eff.x.max() < 4   # check that log10(energy/TeV) is < 10000 TeV
-        assert A_eff.y.min() >= 0   # check that effective area/cm^2 is positive
-        assert A_eff.y.max() < 5e18 # check that effective area/cm^2 is smaller than area of earth's surface
+        # check that log10(energy/TeV) is > 1 MeV
+        assert A_eff.x.min() > -6
+        # check that log10(energy/TeV) is < 10000 TeV
+        assert A_eff.x.max() < 4
+        # check that effective area/cm^2 is positive
+        assert A_eff.y.min() >= 0
+        # check that effective area/cm^2 is smaller than earth's surface
+        assert A_eff.y.max() < 5e18
