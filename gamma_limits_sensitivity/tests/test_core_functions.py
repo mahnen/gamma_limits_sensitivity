@@ -86,18 +86,16 @@ def test_integral_spectral_exclusion_zone():
     t_obs_test = 7.*3600.  # in s
     a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
 
-    isez_test = gls.integral_spectral_exclusion_zone(
+    f_0_result, gamma_result = gls.integral_spectral_exclusion_zone_parameters(
         energy_test, l_lim_test, a_eff, t_obs_test)
 
-    # thest calculated f_0
-    assert isez_test[0] > 1e-14
-    assert isez_test[0] < 1e-10
-
-    # test calculated gamma
-    assert isez_test[1] > -10
-    assert isez_test[1] < 0.5
+    # test results
+    assert f_0_result > 1e-14
+    assert f_0_result < 1e-10
+    assert gamma_result > -10
+    assert gamma_result < 0.5
 
     # cross check that the sensitive energy for inferred gamma is actually
     # equal (to one permille) to the one calculated with the Lagrangian result
-    sensitive_e = gls.sensitive_energy(isez_test[1], a_eff)
+    sensitive_e = gls.sensitive_energy(gamma_result, a_eff)
     assert np.abs(sensitive_e-energy_test)/energy_test < 1e-4

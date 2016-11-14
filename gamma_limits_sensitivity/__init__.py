@@ -31,7 +31,8 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
             l_lim,
             a_eff_interpol,
             pixels_per_line=plot_resolution),
-        get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol),
+        get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol,
+                               n_points_to_plot=plot_resolution),
         get_sensitive_energy(a_eff_interpol),
         get_a_eff_figure(a_eff_interpol)
         ]
@@ -174,11 +175,35 @@ def get_sensitive_energy(a_eff_interpol):
     return figure
 
 
-def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol):
+def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     '''
     Get the integral spectral exclusion zone for the 'ul' command
     '''
     figure = plt.figure()
+
+    energy_limits = get_energy_range(a_eff_interpol)
+    e_x = 10**np.linspace(
+            np.log10(energy_limits[0]),
+            np.log10(energy_limits[1]),
+            n_points_to_plot
+        )
+    e_y = [integral_spectral_exclusion_zone(
+                energy,
+                l_lim,
+                a_eff_interpol,
+                t_obs)
+           for energy
+           in e_x
+           ]
+    e_y = np.array(e_y)
+
+    plt.plot(e_x, e_y, 'k')
+    plt.loglog()
+    plt.title('Integral Spectral Exclusion Zone, t$_{obs}$' +
+              ('={0:1.1f} h'.format(t_obs/3600.)))
+    plt.xlabel('E / TeV')
+    plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
+
     return figure
 
 
@@ -373,8 +398,26 @@ def plot_lambda_s(
 
 def integral_spectral_exclusion_zone(energy, l_lim, a_eff_interpol, t_obs):
     '''
-    This function calculates the integral spectral exclusion zone point at
-    at a given energy in order to draw it into spectral plots.
+    This function returns the integral spectral exclusion zone value
+    at one point in energy for given l_lim, a_eff_interpol, and t_obs
+    '''
+    f_0, gamma = integral_spectral_exclusion_zone_parameters(
+        energy,
+        l_lim,
+        a_eff_interpol,
+        t_obs)
+    return power_law(energy, f_0, gamma)
+
+
+def integral_spectral_exclusion_zone_parameters(
+        energy,
+        l_lim,
+        a_eff_interpol,
+        t_obs
+        ):
+    '''
+    This function calculates the integral spectral exclusion zone parameters
+    f_0 and gamma at at a given energy in order to draw it into spectral plots.
 
     It is done by maximizing the logarithm of the power law flux
     under constraints numerically
