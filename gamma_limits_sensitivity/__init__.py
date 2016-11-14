@@ -225,8 +225,7 @@ def plot_lambda_s(
 
     plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
 
-    plt.title('signal counts per %1.1f h, E$_0$=%1.1f TeV assuming power law' %
-              (t_obs/3600., E_0))
+    plt.title('signal counts per {0:1.1f} h, E$_0$={1:1.1f} TeV assuming power law'.format(t_obs/3600., E_0))
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
     return lambda_s
