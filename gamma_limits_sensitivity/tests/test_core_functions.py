@@ -96,3 +96,8 @@ def test_integral_spectral_exclusion_zone():
     # test calculated gamma
     assert isez_test[1] > -10
     assert isez_test[1] < 0.5
+
+    # cross check that the sensitive energy for inferred gamma is actually
+    # equal (to one permille) to the one calculated with the Lagrangian result
+    sensitive_e = gls.sensitive_energy(isez_test[1], a_eff)
+    assert np.abs(sensitive_e-energy_test)/energy_test < 1e-4
