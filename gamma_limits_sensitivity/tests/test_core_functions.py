@@ -61,3 +61,38 @@ def test_get_ul_f_0():
 
     assert f_0_calc < 2e-13
     assert f_0_calc > 1e-13
+
+
+def test_sensitive_energy():
+    '''
+    Test if the calculation of the sensitive energy
+    makes sense.
+    '''
+    gamma_test = -2.6
+    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+
+    sensitive_e = gls.sensitive_energy(gamma_test, a_eff)
+
+    assert sensitive_e < 1.
+    assert sensitive_e > 0.1
+
+
+def test_integral_spectral_exclusion_zone():
+    '''
+    Test the function for calculating the integral spectral exclusion zone
+    '''
+    energy_test = 1.2  # TeV
+    l_lim_test = 11.3
+    t_obs_test = 7.*3600.  # in s
+    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+
+    isez_test = gls.integral_spectral_exclusion_zone(
+        energy_test, l_lim_test, a_eff, t_obs_test)
+
+    # thest calculated f_0
+    assert isez_test[0] > 1e-14
+    assert isez_test[0] < 1e-10
+
+    # test calculated gamma
+    assert isez_test[1] > -10
+    assert isez_test[1] < 0.5

@@ -4,6 +4,7 @@ and time to detections.
 '''
 import matplotlib.pyplot as plt
 from scipy.interpolate import interpolate
+from scipy.optimize import minimize
 from scipy import integrate
 import numpy as np
 import os
@@ -368,3 +369,45 @@ def plot_lambda_s(
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
     return lambda_s
+
+
+def integral_spectral_exclusion_zone(energy, l_lim, a_eff_interpol, t_obs):
+    '''
+    This function calculates the integral spectral exclusion zone point at
+    at a given energy in order to draw it into spectral plots.
+
+    It is done by maximizing the logarithm of the power law flux
+    under constraints numerically
+    '''
+    log10_f_0_start = np.log10(4.09e-11)
+    gamma_start = -3.011
+    energy_range = get_energy_range(a_eff_interpol)
+
+    # first define function to be minimized
+    function = lambda x: np.log10(
+            power_law(energy, f_0=10**x[0], gamma=x[1], e_0=1.)
+        )*(-1.)
+
+    constraints = (
+        {'type':
+            'ineq',
+            'fun': lambda x: l_lim - effective_area_averaged_flux(
+                gamma=x[1],
+                e_0=1.,
+                a_eff_interpol=a_eff_interpol)*t_obs*(10**x[0])
+         }
+    )
+
+    # bounds for (f_0, gamma):
+    bounds = ((np.log10(4e-60), np.log10(4e-4)), (-20., -0.1))
+
+    # run the minimizer
+    result = minimize(
+        function,
+        (log10_f_0_start, gamma_start),
+        method='SLSQP',
+        bounds=bounds,
+        constraints=constraints
+        )
+    result['x'][0] = 10**result['x'][0]
+    return result['x'][0], result['x'][1]  # f_0, gamma
