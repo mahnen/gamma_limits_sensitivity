@@ -53,9 +53,9 @@ def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, a_eff):
 
 def get_a_eff_test_relative_paths():
     a_eff_test_relative_paths = [
-        '/resources/a_eff/MAGIC_lowZd_Ecut_300GeV.dat',
-        '/resources/a_eff/MAGIC_medZd_Ecut_300GeV.dat',
-        '/resources/a_eff/VERITAS_V5_lowZd_McCutcheon.dat'
+        '/resources/A_eff/MAGIC_lowZd_Ecut_300GeV.dat',
+        '/resources/A_eff/MAGIC_medZd_Ecut_300GeV.dat',
+        '/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
     ]
     return a_eff_test_relative_paths
 
