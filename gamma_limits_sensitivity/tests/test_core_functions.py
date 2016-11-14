@@ -55,7 +55,7 @@ def test_get_ul_f_0():
         t_obs=7.*3600.,
         l_lim=11.3,
         a_eff_interpol=a_eff,
-        E_0=1.,
+        e_0=1.,
         gamma=gamma_test
         )
 

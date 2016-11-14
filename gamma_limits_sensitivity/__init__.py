@@ -31,6 +31,7 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
             a_eff_interpol,
             pixels_per_line=plot_resolution),
         get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol),
+        get_sensitive_energy(a_eff_interpol),
         get_a_eff_figure(a_eff_interpol)
         ]
 
@@ -123,7 +124,7 @@ def get_ul_phasespace_figure(
         t_obs,
         l_lim,
         a_eff_interpol,
-        E_0=1.,
+        e_0=1.,
         pixels_per_line=30):
     '''
     Function to generate the plot of average counts
@@ -134,7 +135,7 @@ def get_ul_phasespace_figure(
 
     # determine parameter plot ranges
     gamma = -2.6
-    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, gamma)
+    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma)
     f_0_limits, gamma_limits = get_f_0_gamma_limits(f_0, gamma)
     f_0_mesh, gamma_mesh = get_f_0_gamma_mesh(
         f_0_limits,
@@ -144,9 +145,30 @@ def get_ul_phasespace_figure(
     lambda_s_mesh = plot_lambda_s(
         f_0_mesh,
         gamma_mesh,
-        E_0, a_eff_interpol,
+        e_0, a_eff_interpol,
         t_obs,
         l_lim)
+
+    return figure
+
+
+def get_sensitive_energy(a_eff_interpol):
+    '''
+    Get a plot showint the sensitive energy
+    given the effective area a_eff_interpol
+    '''
+    figure = plt.figure()
+
+    alpha_range = [-6., -1.0]
+    gammas = np.arange(alpha_range[0], alpha_range[1], 0.1)
+    e_sens = np.array([sensitive_energy(i, a_eff_interpol) for i in gammas])
+
+    plt.plot(gammas, e_sens, 'k')
+
+    plt.title('sensitive energy E$_{sens}$($\\Gamma$)')
+    plt.semilogy()
+    plt.ylabel('E$_{sens}$ / GeV')
+    plt.xlabel('$\\Gamma$')
 
     return figure
 
@@ -222,16 +244,32 @@ def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
     return f_0_mesh, gamma_mesh
 
 
-def get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, gamma):
+def get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma):
     '''
     Calculate f_0 on the exclusion line from solving the boundary condition
     lambda_lim = lambda_s
     '''
     return l_lim / t_obs / effective_area_averaged_flux(
-        gamma, E_0, a_eff_interpol)
+        gamma, e_0, a_eff_interpol)
 
 
-def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
+def sensitive_energy(gamma, a_eff_interpol):
+    '''
+    Function returning the sensitive energy, given gamma
+    and the effective area
+    '''
+    mu = ln_energy_weighted(
+            gamma,
+            a_eff_interpol
+        )/effective_area_averaged_flux(
+            gamma,
+            1.,
+            a_eff_interpol
+        )
+    return np.exp(mu)
+
+
+def effective_area_averaged_flux(gamma, e_0, a_eff_interpol):
     '''
     I define this in the paper as c(gamma)
     '''
@@ -240,8 +278,8 @@ def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
         x,
         f_0=1.,
         gamma=gamma,
-        E_0=E_0
-        )*a_eff_interpol(np.log10(x))  # *10.
+        e_0=e_0
+        )*a_eff_interpol(np.log10(x))
     return integrate.quad(
         integrand,
         energy_range[0],
@@ -250,17 +288,40 @@ def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
         full_output=1)[0]
 
 
-def power_law(E, f_0, gamma, E_0=1.):
+def ln_energy_weighted(gamma, a_eff_interpol):
+    '''
+    For calculating the sensitive energy.
+    This function gets the unnormalized mean ln(energy)
+    integrated over the power law flux and sensitive area
+    '''
+    f_0 = 1.
+    energy_range = get_energy_range(a_eff_interpol)
+    integrand = lambda x: power_law(
+        x,
+        f_0=f_0,
+        gamma=gamma,
+        e_0=1.
+        )*a_eff_interpol(np.log10(x))*np.log(x)
+    return integrate.quad(
+        integrand,
+        energy_range[0],
+        energy_range[1],
+        limit=1000,
+        full_output=1
+        )[0]
+
+
+def power_law(energy, f_0, gamma, e_0=1.):
     '''
     A power law function as defined in the paper
     '''
-    return f_0*(E/E_0)**(gamma)
+    return f_0*(energy/e_0)**(gamma)
 
 
 def plot_lambda_s(
         f_0_mesh,
         gamma_mesh,
-        E_0,
+        e_0,
         a_eff_interpol,
         t_obs,
         l_lim,
@@ -276,7 +337,7 @@ def plot_lambda_s(
 
     lambda_s = np.array([[t_obs*f_0_mesh[i, j]*effective_area_averaged_flux(
         gamma_mesh[i, j],
-        E_0=E_0,
+        e_0=e_0,
         a_eff_interpol=a_eff_interpol
         ) for j in range(pixels_per_line)] for i in range(pixels_per_line)])
 
@@ -300,7 +361,10 @@ def plot_lambda_s(
 
     plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
 
-    plt.title('signal counts per {0:1.1f} h, E$_0$={1:1.1f} TeV assuming power law'.format(t_obs/3600., E_0))
+    plt.title(
+        'signal counts per {0:1.1f} h, E$_0$={1:1.1f} TeV assuming power law'.
+        format(t_obs/3600., e_0)
+        )
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
     return lambda_s
