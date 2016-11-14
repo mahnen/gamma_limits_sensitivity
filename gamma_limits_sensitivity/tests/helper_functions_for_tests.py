@@ -3,20 +3,20 @@ import numpy as np
 
 
 # get a list of full effective area file paths from the resource data files
-def get_A_eff_paths():
-    A_eff_paths = [
+def get_a_eff_paths():
+    a_eff_paths = [
         gls.__path__[0]+relpath
         for relpath
-        in gls.get_A_eff_test_relative_paths()
+        in gls.get_a_eff_test_relative_paths()
         ]
-    return A_eff_paths
+    return a_eff_paths
 
 
 # get a list of interpolated effective areas from the resource data files
-def get_A_eff_list():
-    A_eff_paths = get_A_eff_paths()
-    A_eff_list = [gls.get_effective_area(path) for path in A_eff_paths]
-    return A_eff_list
+def get_a_eff_list():
+    a_eff_paths = get_a_eff_paths()
+    a_eff_list = [gls.get_effective_area(path) for path in a_eff_paths]
+    return a_eff_list
 
 
 # helper function to return a random On/Off measurement

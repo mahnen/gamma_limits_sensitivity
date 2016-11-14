@@ -9,18 +9,18 @@ import numpy as np
 import os
 
 
-def upper_limit(t_obs, l_lim, A_eff, plot_resolution=30):
-    A_eff_interpol = get_effective_area(A_eff)
+def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
+    a_eff_interpol = get_effective_area(a_eff)
 
     # make the figures
     figures = [
         get_ul_phasespace_figure(
             t_obs,
             l_lim,
-            A_eff_interpol,
+            a_eff_interpol,
             pixels_per_line=plot_resolution),
-        get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol),
-        get_A_eff_figure(A_eff_interpol)
+        get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol),
+        get_a_eff_figure(a_eff_interpol)
         ]
 
     dictionary = {
@@ -30,7 +30,7 @@ def upper_limit(t_obs, l_lim, A_eff, plot_resolution=30):
     return dictionary
 
 
-def sensitivity(s_bg, alpha, t_obs, A_eff):
+def sensitivity(s_bg, alpha, t_obs, a_eff):
     figures = [plt.figure()]
     dictionary = {
         'plots': figures
@@ -39,7 +39,7 @@ def sensitivity(s_bg, alpha, t_obs, A_eff):
     return dictionary
 
 
-def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, A_eff):
+def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, a_eff):
     figures = [plt.figure()]
     times = [1., 2., 3.]
 
@@ -51,41 +51,41 @@ def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, A_eff):
     return dictionary
 
 
-def get_A_eff_test_relative_paths():
-    A_eff_test_relative_paths = [
-        '/resources/A_eff/MAGIC_lowZd_Ecut_300GeV.dat',
-        '/resources/A_eff/MAGIC_medZd_Ecut_300GeV.dat',
-        '/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
+def get_a_eff_test_relative_paths():
+    a_eff_test_relative_paths = [
+        '/resources/a_eff/MAGIC_lowZd_Ecut_300GeV.dat',
+        '/resources/a_eff/MAGIC_medZd_Ecut_300GeV.dat',
+        '/resources/a_eff/VERITAS_V5_lowZd_McCutcheon.dat'
     ]
-    return A_eff_test_relative_paths
+    return a_eff_test_relative_paths
 
 
-def get_effective_area(A_eff_path):
-    A_eff_data = np.loadtxt(A_eff_path, delimiter=',')
+def get_effective_area(a_eff_path):
+    a_eff_data = np.loadtxt(a_eff_path, delimiter=',')
 
     # interpolate the data points, every energy outside definition range
     # from the data file is assumed to have 0 effective area
-    A_eff_interpol = interpolate.interp1d(
-        A_eff_data[:, 0],
-        A_eff_data[:, 1],
+    a_eff_interpol = interpolate.interp1d(
+        a_eff_data[:, 0],
+        a_eff_data[:, 1],
         bounds_error=False,
         fill_value=0.
     )
 
-    return A_eff_interpol
+    return a_eff_interpol
 
 
 def get_ul_phasespace_figure(
         t_obs,
         l_lim,
-        A_eff_interpol,
+        a_eff_interpol,
         E_0=1.,
         pixels_per_line=30):
     figure = plt.figure()
 
     # determine parameter plot ranges
     Gamma = -2.6
-    f_0 = get_ul_f_0(t_obs, l_lim, A_eff_interpol, E_0, Gamma)
+    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, Gamma)
     f_0_limits, Gamma_limits = get_f_0_Gamma_limits(f_0, Gamma)
     f_0_mesh, Gamma_mesh = get_f_0_Gamma_mesh(
         f_0_limits,
@@ -95,27 +95,27 @@ def get_ul_phasespace_figure(
     lambda_s_mesh = plot_lambda_s(
         f_0_mesh,
         Gamma_mesh,
-        E_0, A_eff_interpol,
+        E_0, a_eff_interpol,
         t_obs,
         l_lim)
 
     return figure
 
 
-def get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol):
+def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol):
     figure = plt.figure()
     return figure
 
 
-def get_A_eff_figure(A_eff_interpol):
+def get_a_eff_figure(a_eff_interpol):
     figure = plt.figure()
-    start = A_eff_interpol.x.min()
-    stop = A_eff_interpol.x.max()
+    start = a_eff_interpol.x.min()
+    stop = a_eff_interpol.x.max()
     samples = 1000
 
     energy_samples = np.linspace(start, stop, samples)
     area_samples = np.array([
-        A_eff_interpol(energy)
+        a_eff_interpol(energy)
         for energy
         in energy_samples
         ])
@@ -130,10 +130,10 @@ def get_A_eff_figure(A_eff_interpol):
 
 # returns the definition range of the interpolated effective area function
 # and a bit more, units: TeV
-def get_energy_range(A_eff_interpol):
+def get_energy_range(a_eff_interpol):
     return np.power(10, np.array([
-        A_eff_interpol.x.min()*0.999,
-        A_eff_interpol.x.max()*1.001
+        a_eff_interpol.x.min()*0.999,
+        a_eff_interpol.x.max()*1.001
         ]))
 
 
@@ -158,20 +158,20 @@ def get_f_0_Gamma_mesh(f_0_limits, Gamma_limits, pixels_per_line):
     return f_0_mesh, Gamma_mesh
 
 
-def get_ul_f_0(t_obs, l_lim, A_eff_interpol, E_0, Gamma):
+def get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, Gamma):
     return l_lim / t_obs / effective_area_averaged_flux(
-        Gamma, E_0, A_eff_interpol)
+        Gamma, E_0, a_eff_interpol)
 
 
 # I define this in the paper as c(Gamma)
-def effective_area_averaged_flux(Gamma, E_0, A_eff_interpol):
-    energy_range = get_energy_range(A_eff_interpol)
+def effective_area_averaged_flux(Gamma, E_0, a_eff_interpol):
+    energy_range = get_energy_range(a_eff_interpol)
     integrand = lambda x: power_law(
         x,
         f_0=1.,
         Gamma=Gamma,
         E_0=E_0
-        )*A_eff_interpol(np.log10(x))  # *10.
+        )*a_eff_interpol(np.log10(x))  # *10.
     return integrate.quad(
         integrand,
         energy_range[0],
@@ -188,7 +188,7 @@ def plot_lambda_s(
         f_0_mesh,
         Gamma_mesh,
         E_0,
-        A_eff_interpol,
+        a_eff_interpol,
         t_obs,
         l_lim,
         n_levels=9,
@@ -202,7 +202,7 @@ def plot_lambda_s(
     lambda_s = np.array([[t_obs*f_0_mesh[i, j]*effective_area_averaged_flux(
         Gamma_mesh[i, j],
         E_0=E_0,
-        A_eff_interpol=A_eff_interpol
+        a_eff_interpol=a_eff_interpol
         ) for j in range(pixels_per_line)] for i in range(pixels_per_line)])
 
     levels = np.array([l_lim/((1.5)**(int(n_levels/2)-i))

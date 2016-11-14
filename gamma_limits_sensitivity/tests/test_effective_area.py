@@ -6,7 +6,7 @@ import gamma_limits_sensitivity as gls
 import scipy
 
 from helper_functions_for_tests import (
-    get_A_eff_list,
+    get_a_eff_list,
     get_random_on_off_experiment_no_source
     )
 
@@ -17,12 +17,12 @@ def test_get_effective_area():
     '''
 
     # build path to test files
-    A_eff_list = get_A_eff_list()
+    a_eff_list = get_a_eff_list()
 
-    for A_eff in A_eff_list:
+    for a_eff in a_eff_list:
         # check that it is interpolation function
         assert isinstance(
-            A_eff,
+            a_eff,
             scipy.interpolate.interpolate.interp1d)
 
 
@@ -42,14 +42,14 @@ def test_effective_area_interpolation():
     .
     .
     '''
-    A_eff_list = get_A_eff_list()
+    a_eff_list = get_a_eff_list()
 
-    for A_eff in A_eff_list:
+    for a_eff in a_eff_list:
         # check that log10(energy/TeV) is > 1 MeV
-        assert A_eff.x.min() > -6
+        assert a_eff.x.min() > -6
         # check that log10(energy/TeV) is < 10000 TeV
-        assert A_eff.x.max() < 4
+        assert a_eff.x.max() < 4
         # check that effective area/cm^2 is positive
-        assert A_eff.y.min() >= 0
+        assert a_eff.y.min() >= 0
         # check that effective area/cm^2 is smaller than earth's surface
-        assert A_eff.y.max() < 5e18
+        assert a_eff.y.max() < 5e18

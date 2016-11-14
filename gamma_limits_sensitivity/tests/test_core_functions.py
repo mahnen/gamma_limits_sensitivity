@@ -6,7 +6,7 @@ import gamma_limits_sensitivity as gls
 import numpy as np
 from scipy import integrate
 
-from helper_functions_for_tests import get_A_eff_list
+from helper_functions_for_tests import get_a_eff_list
 
 
 def test_get_energy_range():
@@ -14,10 +14,10 @@ def test_get_energy_range():
     Test if the function really returns sensible energy ranges
     in units of TeV
     '''
-    A_eff_list = get_A_eff_list()
+    a_eff_list = get_a_eff_list()
 
-    for A_eff in A_eff_list:
-        e_range = gls.get_energy_range(A_eff)
+    for a_eff in a_eff_list:
+        e_range = gls.get_energy_range(a_eff)
         assert e_range[0] > 0.05  # all supplied effective areas start > 50 GeV
         assert e_range[1] < 100   # all supplied effective areas stop < 100 TeV
 
@@ -49,12 +49,12 @@ def test_get_ul_f_0():
     This also tests effective_area_averaged_flux() and power_law()
     '''
     Gamma_test = -2.6
-    A_eff = get_A_eff_list()[2]  # Veritas V5 lowZd
+    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
 
     f_0_calc = gls.get_ul_f_0(
         t_obs=7.*3600.,
         l_lim=11.3,
-        A_eff_interpol=A_eff,
+        a_eff_interpol=a_eff,
         E_0=1.,
         Gamma=Gamma_test
         )
