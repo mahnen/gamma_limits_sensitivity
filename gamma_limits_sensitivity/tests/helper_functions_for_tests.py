@@ -2,8 +2,10 @@ import gamma_limits_sensitivity as gls
 import numpy as np
 
 
-# get a list of full effective area file paths from the resource data files
 def get_a_eff_paths():
+    '''
+    get a list of full effective area file paths from the resource data files
+    '''
     a_eff_paths = [
         gls.__path__[0]+relpath
         for relpath
@@ -12,15 +14,19 @@ def get_a_eff_paths():
     return a_eff_paths
 
 
-# get a list of interpolated effective areas from the resource data files
 def get_a_eff_list():
+    '''
+    get a list of interpolated effective areas from the resource data files
+    '''
     a_eff_paths = get_a_eff_paths()
     a_eff_list = [gls.get_effective_area(path) for path in a_eff_paths]
     return a_eff_list
 
 
-# helper function to return a random On/Off measurement
 def get_random_on_off_experiment_no_source():
+    '''
+    helper function to return a random On/Off measurement
+    '''
     # sample a random alpha from [0.1 .. 0.8]
     alpha = np.random.random()*0.7 + 0.1
 
