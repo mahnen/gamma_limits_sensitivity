@@ -97,7 +97,7 @@ def test_high_level_api_predict():
         df_0=1e-13,
         gamma=-2.6,
         dgamma=0.2,
-        E_0=1.,  # in TeV
+        e_0=1.,  # in TeV
         a_eff=a_eff_path,
         )
 

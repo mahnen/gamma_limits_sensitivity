@@ -39,7 +39,7 @@ def main():
             dictionary = gls.upper_limit(
                 t_obs=float(arguments['--t_obs']),
                 l_lim=float(arguments['--l_lim']),
-                A_eff=arguments['--A_eff'],
+                a_eff=arguments['--A_eff'],
             )
 
             if arguments['--out'] is None:
@@ -56,7 +56,7 @@ def main():
                 s_bg=float(arguments['--s_bg']),
                 alpha=float(arguments['--alpha']),
                 t_obs=float(arguments['--t_obs']),
-                A_eff=arguments['--A_eff'],
+                a_eff=arguments['--A_eff'],
             )
 
         elif arguments['predict']:
@@ -67,8 +67,8 @@ def main():
                 df_0=float(arguments['--df_0']),
                 gamma=float(arguments['--Gamma']),
                 dgamma=float(arguments['--dGamma']),
-                E_0=float(arguments['--E_0']),
-                A_eff=arguments['--A_eff'],
+                e_0=float(arguments['--E_0']),
+                a_eff=arguments['--A_eff'],
             )
 
         else:

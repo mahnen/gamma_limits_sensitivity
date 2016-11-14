@@ -10,6 +10,17 @@ import os
 
 
 def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
+    '''
+    This function generates all plots for the command 'ul' from
+    input data. It takes:
+
+    t_obs   in seconds
+    l_lim   from Rolke, Knoetig, ...
+    a_eff   A path to the file with effective area over true energy after cuts
+    plot_resolution    a parameter for running tests faster
+
+    It returns a dictionary with results.
+    '''
     a_eff_interpol = get_effective_area(a_eff)
 
     # make the figures
@@ -31,6 +42,17 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
 
 
 def sensitivity(s_bg, alpha, t_obs, a_eff):
+    '''
+    This function generates all plots for the command 'sens' from
+    input data. It takes:
+
+    s_bg    in 1/seconds
+    alpha   on/off exposure ratio
+    t_obs   observation time in seconds
+    a_eff   A path to the file with effective area over true energy after cuts
+
+    It returns a dictionary with results.
+    '''
     figures = [plt.figure()]
     dictionary = {
         'plots': figures
@@ -39,7 +61,22 @@ def sensitivity(s_bg, alpha, t_obs, a_eff):
     return dictionary
 
 
-def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, E_0, a_eff):
+def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff):
+    '''
+    This function generates all plots for the command 'predict' from
+    input data. It takes:
+
+    s_bg    in 1/seconds
+    alpha   on/off exposure ratio
+    f_0     flux normalization in 1/(cm^2 s TeV)
+    df_0    flux normalization error 1 sigma 1/(cm^2 s TeV)
+    gamma   power law index (<0)
+    dgamma  power law index error 1 sigma
+    e_0     reference energy in TeV
+    a_eff   A path to the file with effective area over true energy after cuts
+
+    It returns a dictionary with results.
+    '''
     figures = [plt.figure()]
     times = [1., 2., 3.]
 
@@ -52,6 +89,9 @@ def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, E_0, a_eff):
 
 
 def get_a_eff_test_relative_paths():
+    '''
+    Helper function to get the paths of stored effective areas
+    '''
     a_eff_test_relative_paths = [
         '/resources/A_eff/MAGIC_lowZd_Ecut_300GeV.dat',
         '/resources/A_eff/MAGIC_medZd_Ecut_300GeV.dat',
@@ -61,6 +101,10 @@ def get_a_eff_test_relative_paths():
 
 
 def get_effective_area(a_eff_path):
+    '''
+    Function to get the interpolated effective area
+    from a file path
+    '''
     a_eff_data = np.loadtxt(a_eff_path, delimiter=',')
 
     # interpolate the data points, every energy outside definition range
@@ -81,6 +125,11 @@ def get_ul_phasespace_figure(
         a_eff_interpol,
         E_0=1.,
         pixels_per_line=30):
+    '''
+    Function to generate the plot of average counts
+    lambda_s in the phasespace of the power law.
+    It will indicate the limit lambda_lim in the same plot.
+    '''
     figure = plt.figure()
 
     # determine parameter plot ranges
@@ -103,11 +152,18 @@ def get_ul_phasespace_figure(
 
 
 def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol):
+    '''
+    Get the integral spectral exclusion zone for the 'ul' command
+    '''
     figure = plt.figure()
     return figure
 
 
 def get_a_eff_figure(a_eff_interpol):
+    '''
+    Get a plot showing the effective area
+    referenced by a_eff_interpol
+    '''
     figure = plt.figure()
     start = a_eff_interpol.x.min()
     stop = a_eff_interpol.x.max()
@@ -128,9 +184,11 @@ def get_a_eff_figure(a_eff_interpol):
     return figure
 
 
-# returns the definition range of the interpolated effective area function
-# and a bit more, units: TeV
 def get_energy_range(a_eff_interpol):
+    '''
+    Get the definition energy range of the effective area
+    for integration and plotting purposes.
+    '''
     return np.power(10, np.array([
         a_eff_interpol.x.min()*0.999,
         a_eff_interpol.x.max()*1.001
@@ -138,6 +196,9 @@ def get_energy_range(a_eff_interpol):
 
 
 def get_f_0_gamma_limits(f_0, gamma):
+    '''
+    Güet a nice box power law phase space box for plotting
+    '''
     f_0_limits = [f_0*0.1, f_0*1.9]
     gamma_limits = [gamma-1., gamma+1.]
     if gamma_limits[1] > 0:
@@ -146,6 +207,9 @@ def get_f_0_gamma_limits(f_0, gamma):
 
 
 def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
+    '''
+    Generate two numpy.meshgrids for 2d plotting
+    '''
     f_0_stepsize = (f_0_limits[1]-f_0_limits[0])/pixels_per_line
     gamma_stepsize = (gamma_limits[1]-gamma_limits[0])/pixels_per_line
 
@@ -159,12 +223,18 @@ def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
 
 
 def get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, gamma):
+    '''
+    Calculate f_0 on the exclusion line from solving the boundary condition
+    lambda_lim = lambda_s
+    '''
     return l_lim / t_obs / effective_area_averaged_flux(
         gamma, E_0, a_eff_interpol)
 
 
-# I define this in the paper as c(gamma)
 def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
+    '''
+    I define this in the paper as c(gamma)
+    '''
     energy_range = get_energy_range(a_eff_interpol)
     integrand = lambda x: power_law(
         x,
@@ -181,6 +251,9 @@ def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
 
 
 def power_law(E, f_0, gamma, E_0=1.):
+    '''
+    A power law function as defined in the paper
+    '''
     return f_0*(E/E_0)**(gamma)
 
 
@@ -196,7 +269,9 @@ def plot_lambda_s(
         linewidths=1,
         colors='k'
         ):
-
+    '''
+    Function to get the lambda_s plot in the phasespace of the power law
+    '''
     pixels_per_line = np.shape(f_0_mesh)[0]
 
     lambda_s = np.array([[t_obs*f_0_mesh[i, j]*effective_area_averaged_flux(
