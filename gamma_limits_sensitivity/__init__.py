@@ -39,7 +39,7 @@ def sensitivity(s_bg, alpha, t_obs, a_eff):
     return dictionary
 
 
-def predict(s_bg, alpha, f_0, df_0, Gamma, dGamma, E_0, a_eff):
+def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, E_0, a_eff):
     figures = [plt.figure()]
     times = [1., 2., 3.]
 
@@ -84,17 +84,17 @@ def get_ul_phasespace_figure(
     figure = plt.figure()
 
     # determine parameter plot ranges
-    Gamma = -2.6
-    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, Gamma)
-    f_0_limits, Gamma_limits = get_f_0_Gamma_limits(f_0, Gamma)
-    f_0_mesh, Gamma_mesh = get_f_0_Gamma_mesh(
+    gamma = -2.6
+    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, gamma)
+    f_0_limits, gamma_limits = get_f_0_gamma_limits(f_0, gamma)
+    f_0_mesh, gamma_mesh = get_f_0_gamma_mesh(
         f_0_limits,
-        Gamma_limits,
+        gamma_limits,
         pixels_per_line)
 
     lambda_s_mesh = plot_lambda_s(
         f_0_mesh,
-        Gamma_mesh,
+        gamma_mesh,
         E_0, a_eff_interpol,
         t_obs,
         l_lim)
@@ -137,39 +137,39 @@ def get_energy_range(a_eff_interpol):
         ]))
 
 
-def get_f_0_Gamma_limits(f_0, Gamma):
+def get_f_0_gamma_limits(f_0, gamma):
     f_0_limits = [f_0*0.1, f_0*1.9]
-    Gamma_limits = [Gamma-1., Gamma+1.]
-    if Gamma_limits[1] > 0:
-        Gamma_limits[1] = 0.
-    return f_0_limits, Gamma_limits
+    gamma_limits = [gamma-1., gamma+1.]
+    if gamma_limits[1] > 0:
+        gamma_limits[1] = 0.
+    return f_0_limits, gamma_limits
 
 
-def get_f_0_Gamma_mesh(f_0_limits, Gamma_limits, pixels_per_line):
+def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
     f_0_stepsize = (f_0_limits[1]-f_0_limits[0])/pixels_per_line
-    gamma_stepsize = (Gamma_limits[1]-Gamma_limits[0])/pixels_per_line
+    gamma_stepsize = (gamma_limits[1]-gamma_limits[0])/pixels_per_line
 
     f_0_stepsize = f_0_stepsize+f_0_stepsize*1e-9
     gamma_stepsize = gamma_stepsize+gamma_stepsize*1e-9
 
     f_0_buf = np.arange(f_0_limits[0], f_0_limits[1], f_0_stepsize)
-    gamma_buf = np.arange(Gamma_limits[1], Gamma_limits[0], -gamma_stepsize)
-    f_0_mesh, Gamma_mesh = np.meshgrid(f_0_buf, gamma_buf)
-    return f_0_mesh, Gamma_mesh
+    gamma_buf = np.arange(gamma_limits[1], gamma_limits[0], -gamma_stepsize)
+    f_0_mesh, gamma_mesh = np.meshgrid(f_0_buf, gamma_buf)
+    return f_0_mesh, gamma_mesh
 
 
-def get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, Gamma):
+def get_ul_f_0(t_obs, l_lim, a_eff_interpol, E_0, gamma):
     return l_lim / t_obs / effective_area_averaged_flux(
-        Gamma, E_0, a_eff_interpol)
+        gamma, E_0, a_eff_interpol)
 
 
-# I define this in the paper as c(Gamma)
-def effective_area_averaged_flux(Gamma, E_0, a_eff_interpol):
+# I define this in the paper as c(gamma)
+def effective_area_averaged_flux(gamma, E_0, a_eff_interpol):
     energy_range = get_energy_range(a_eff_interpol)
     integrand = lambda x: power_law(
         x,
         f_0=1.,
-        Gamma=Gamma,
+        gamma=gamma,
         E_0=E_0
         )*a_eff_interpol(np.log10(x))  # *10.
     return integrate.quad(
@@ -180,13 +180,13 @@ def effective_area_averaged_flux(Gamma, E_0, a_eff_interpol):
         full_output=1)[0]
 
 
-def power_law(E, f_0, Gamma, E_0=1.):
-    return f_0*(E/E_0)**(Gamma)
+def power_law(E, f_0, gamma, E_0=1.):
+    return f_0*(E/E_0)**(gamma)
 
 
 def plot_lambda_s(
         f_0_mesh,
-        Gamma_mesh,
+        gamma_mesh,
         E_0,
         a_eff_interpol,
         t_obs,
@@ -200,7 +200,7 @@ def plot_lambda_s(
     pixels_per_line = np.shape(f_0_mesh)[0]
 
     lambda_s = np.array([[t_obs*f_0_mesh[i, j]*effective_area_averaged_flux(
-        Gamma_mesh[i, j],
+        gamma_mesh[i, j],
         E_0=E_0,
         a_eff_interpol=a_eff_interpol
         ) for j in range(pixels_per_line)] for i in range(pixels_per_line)])
@@ -215,7 +215,7 @@ def plot_lambda_s(
 
     cset = plt.contour(
         f_0_mesh,
-        Gamma_mesh,
+        gamma_mesh,
         lambda_s,
         levels=levels,
         linestyles=linestyles,

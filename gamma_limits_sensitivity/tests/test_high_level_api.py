@@ -9,7 +9,7 @@ as stated in the README and wants to try it on an upper limit calculation
 
 she calls it as explained:
 
-   gamma_limits_sensitivity ul --N_on=10 --N_off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
+   gamma_limits_sensitivity ul --n_on=10 --n_off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
 
 and some nice plots return
 
@@ -95,8 +95,8 @@ def test_high_level_api_predict():
         alpha=0.2,
         f_0=1e-12,
         df_0=1e-13,
-        Gamma=-2.6,
-        dGamma=0.2,
+        gamma=-2.6,
+        dgamma=0.2,
         E_0=1.,  # in TeV
         a_eff=a_eff_path,
         )

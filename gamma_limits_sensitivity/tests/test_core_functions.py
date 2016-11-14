@@ -22,24 +22,24 @@ def test_get_energy_range():
         assert e_range[1] < 100   # all supplied effective areas stop < 100 TeV
 
 
-def test_f_0_Gamma_mesh():
+def test_f_0_gamma_mesh():
     '''
     Test if the phase space box makes sense
     '''
     f_0_test = 1e-12
-    Gamma_test = -2.6
+    gamma_test = -2.6
 
-    f_0_lim, Gamma_lim = gls.get_f_0_Gamma_limits(f_0_test, Gamma_test)
-    f_0_mesh, Gamma_mesh = gls.get_f_0_Gamma_mesh(
+    f_0_lim, gamma_lim = gls.get_f_0_gamma_limits(f_0_test, gamma_test)
+    f_0_mesh, gamma_mesh = gls.get_f_0_gamma_mesh(
         f_0_lim,
-        Gamma_lim,
+        gamma_lim,
         pixels_per_line=30)
 
     assert f_0_lim[0] < f_0_test
     assert f_0_lim[1] > f_0_test
-    assert Gamma_lim[0] < Gamma_test
-    assert Gamma_lim[1] > Gamma_test
-    assert np.shape(f_0_mesh) == np.shape(Gamma_mesh)
+    assert gamma_lim[0] < gamma_test
+    assert gamma_lim[1] > gamma_test
+    assert np.shape(f_0_mesh) == np.shape(gamma_mesh)
 
 
 def test_get_ul_f_0():
@@ -48,7 +48,7 @@ def test_get_ul_f_0():
     lambda_s = lambda_limi is correct.
     This also tests effective_area_averaged_flux() and power_law()
     '''
-    Gamma_test = -2.6
+    gamma_test = -2.6
     a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
 
     f_0_calc = gls.get_ul_f_0(
@@ -56,7 +56,7 @@ def test_get_ul_f_0():
         l_lim=11.3,
         a_eff_interpol=a_eff,
         E_0=1.,
-        Gamma=Gamma_test
+        gamma=gamma_test
         )
 
     assert f_0_calc < 2e-13

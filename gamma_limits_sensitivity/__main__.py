@@ -9,7 +9,7 @@ Usage:
   gamma_limits_sensitivity --version
 
 Options:
-  --l_lim=<arg>         Signal count limit, estimated from N_on, N_off, and alpha
+  --l_lim=<arg>         Signal count limit, estimated from n_on, n_off, and alpha
   --t_obs=<arg>         Observation time / s
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
@@ -65,8 +65,8 @@ def main():
                 alpha=float(arguments['--alpha']),
                 f_0=float(arguments['--f_0']),
                 df_0=float(arguments['--df_0']),
-                Gamma=float(arguments['--Gamma']),
-                dGamma=float(arguments['--dGamma']),
+                gamma=float(arguments['--Gamma']),
+                dgamma=float(arguments['--dGamma']),
                 E_0=float(arguments['--E_0']),
                 A_eff=arguments['--A_eff'],
             )
