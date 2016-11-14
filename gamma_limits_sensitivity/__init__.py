@@ -96,7 +96,8 @@ def get_ul_phasespace_figure(
         f_0_mesh,
         Gamma_mesh,
         E_0, A_eff_interpol,
-        t_obs)
+        t_obs,
+        l_lim)
 
     return figure
 
@@ -108,6 +109,22 @@ def get_ul_spectrum_figure(t_obs, l_lim, A_eff_interpol):
 
 def get_A_eff_figure(A_eff_interpol):
     figure = plt.figure()
+    start = A_eff_interpol.x.min()
+    stop = A_eff_interpol.x.max()
+    samples = 1000
+
+    energy_samples = np.linspace(start, stop, samples)
+    area_samples = np.array([
+        A_eff_interpol(energy)
+        for energy
+        in energy_samples
+        ])
+    plt.plot(np.power(10, energy_samples), area_samples/10000., 'k')
+
+    plt.loglog()
+    plt.title('Effective Area')
+    plt.xlabel('Energy / TeV')
+    plt.ylabel('A$_{eff}$ / m$^2$')
     return figure
 
 
@@ -173,7 +190,8 @@ def plot_lambda_s(
         E_0,
         A_eff_interpol,
         t_obs,
-        n_levels=7,
+        l_lim,
+        n_levels=9,
         linestyles='dashed',
         linewidths=1,
         colors='k'
@@ -187,9 +205,13 @@ def plot_lambda_s(
         A_eff_interpol=A_eff_interpol
         ) for j in range(pixels_per_line)] for i in range(pixels_per_line)])
 
-    lambda_s_median = np.median(lambda_s.flatten())
-    levels = [lambda_s_median/((1.5)**((n_levels/2)-i))
-              for i in range(n_levels)]
+    levels = np.array([l_lim/((1.5)**(int(n_levels/2)-i))
+                       for i in range(n_levels)])
+    limit_index = np.where(levels == l_lim)[0][0]
+    linestyles = [linestyles for i in range(n_levels)]
+    linestyles[limit_index] = 'solid'
+    linewidths = [linewidths for i in range(n_levels)]
+    linewidths[limit_index] = 2
 
     cset = plt.contour(
         f_0_mesh,
