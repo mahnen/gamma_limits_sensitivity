@@ -183,7 +183,7 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     gamma_range = [-8, -0.5]
 
     energy_limits = [
-        sensitive_energy(gamma_range[0] a_eff_interpol),
+        sensitive_energy(gamma_range[0], a_eff_interpol),
         sensitive_energy(gamma_range[1], a_eff_interpol)]
     e_x = 10**np.linspace(
             np.log10(energy_limits[0]),
