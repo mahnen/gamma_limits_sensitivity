@@ -180,7 +180,7 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     Get the integral spectral exclusion zone for the 'ul' command
     '''
     figure = plt.figure()
-    gamma_range = [-8, -0.5]
+    gamma_range = [-6, -0.5]
 
     energy_limits = [
         sensitive_energy(gamma_range[0], a_eff_interpol),
