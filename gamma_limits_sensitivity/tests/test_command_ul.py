@@ -38,7 +38,7 @@ def test_get_ul_phasespace_figure():
         1.*3600.,
         l_lim,
         a_eff_interpol,
-        pixels_per_line=5
+        pixels_per_line=3
         ) for a_eff_interpol in a_eff_list]
 
     for plot in ul_phasespace_figures:
@@ -55,7 +55,8 @@ def test_get_ul_spectrum_figure():
     ul_spectrum_figures = [gls.get_ul_spectrum_figure(
         1.*3600.,
         l_lim,
-        a_eff_interpol) for a_eff_interpol in a_eff_list]
+        a_eff_interpol,
+        n_points_to_plot=3) for a_eff_interpol in a_eff_list]
 
     for plot in ul_spectrum_figures:
         assert isinstance(plot, matplotlib.figure.Figure)

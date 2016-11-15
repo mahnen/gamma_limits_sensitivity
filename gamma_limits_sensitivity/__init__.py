@@ -4,7 +4,7 @@ and time to detections.
 '''
 import matplotlib.pyplot as plt
 from scipy.interpolate import interpolate
-from scipy.optimize import minimize
+from scipy.optimize import minimize, brentq
 from scipy import integrate
 import numpy as np
 import os
@@ -180,8 +180,11 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     Get the integral spectral exclusion zone for the 'ul' command
     '''
     figure = plt.figure()
+    gamma_range = [-8, -0.5]
 
-    energy_limits = get_energy_range(a_eff_interpol)
+    energy_limits = [
+        sensitive_energy(gamma_range[0] a_eff_interpol),
+        sensitive_energy(gamma_range[1], a_eff_interpol)]
     e_x = 10**np.linspace(
             np.log10(energy_limits[0]),
             np.log10(energy_limits[1]),
@@ -293,6 +296,26 @@ def sensitive_energy(gamma, a_eff_interpol):
             a_eff_interpol
         )
     return np.exp(mu)
+
+
+def get_gamma_from_sensitive_energy(E_sens, a_eff_interpol):
+    '''
+    numerical inverse of the sensitive energy
+    '''
+    gamma_min = -30.
+    gamma_max = -0.05
+
+    try:
+        gamma_num = brentq(lambda x: (sensitive_energy(
+                gamma = x,
+                a_eff_interpol = a_eff_interpol
+                ) - E_sens
+            ), gamma_min, gamma_max
+        )
+    except:
+        gamma_num = 0.
+
+    return gamma_num
 
 
 def effective_area_averaged_flux(gamma, e_0, a_eff_interpol):
@@ -413,44 +436,16 @@ def integral_spectral_exclusion_zone_parameters(
         energy,
         l_lim,
         a_eff_interpol,
-        t_obs
+        t_obs,
+        e_0=1.
         ):
     '''
     This function calculates the integral spectral exclusion zone parameters
     f_0 and gamma at at a given energy in order to draw it into spectral plots.
 
-    It is done by maximizing the logarithm of the power law flux
-    under constraints numerically
+    It is done by utilizing the Lagrangian results from the paper.
     '''
-    log10_f_0_start = np.log10(4.09e-11)
-    gamma_start = -3.011
-    energy_range = get_energy_range(a_eff_interpol)
-
-    # first define function to be minimized
-    function = lambda x: np.log10(
-            power_law(energy, f_0=10**x[0], gamma=x[1], e_0=1.)
-        )*(-1.)
-
-    constraints = (
-        {'type':
-            'ineq',
-            'fun': lambda x: l_lim - effective_area_averaged_flux(
-                gamma=x[1],
-                e_0=1.,
-                a_eff_interpol=a_eff_interpol)*t_obs*(10**x[0])
-         }
-    )
-
-    # bounds for (f_0, gamma):
-    bounds = ((np.log10(4e-60), np.log10(4e-4)), (-20., -0.1))
-
-    # run the minimizer
-    result = minimize(
-        function,
-        (log10_f_0_start, gamma_start),
-        method='SLSQP',
-        bounds=bounds,
-        constraints=constraints
-        )
-    result['x'][0] = 10**result['x'][0]
-    return result['x'][0], result['x'][1]  # f_0, gamma
+    gamma_calc = get_gamma_from_sensitive_energy(energy, a_eff_interpol)
+    f_0_calc = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma_calc)
+    
+    return f_0_calc, gamma_calc

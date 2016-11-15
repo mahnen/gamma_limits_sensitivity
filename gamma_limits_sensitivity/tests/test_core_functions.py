@@ -77,6 +77,19 @@ def test_sensitive_energy():
     assert sensitive_e > 0.1
 
 
+def test_inverse_sensitive_energy():
+    '''
+    Test if the calculation of the inverse 
+    sensitive energy (calculation of Gamma) makes sense.
+    '''
+    gamma_test = -2.6
+    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+
+    sensitive_e = gls.sensitive_energy(gamma_test, a_eff)
+    gamma_inverse = gls.get_gamma_from_sensitive_energy(sensitive_e, a_eff)
+
+    assert  np.abs(gamma_inverse-gamma_test)/gamma_test < 1e-4
+
 def test_integral_spectral_exclusion_zone():
     '''
     Test the function for calculating the integral spectral exclusion zone
