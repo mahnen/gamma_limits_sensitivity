@@ -27,19 +27,19 @@ There are three main commands that **gamma_limits_sensitivity** can excecute. Th
 
 ```
 Usage:
-  gamma_limits_sensitivity ul --lambda_lim=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
-  gamma_limits_sensitivity sens --sigma_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
-  gamma_limits_sensitivity predict --sigma_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity ul --l_lim=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<file>]
+  gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity (-h | --help)
   gamma_limits_sensitivity --version
 
 Options:
-  --lambda_lim=<arg>         Signal count limit, estimated from n_on, n_off, and alpha
+  --l_lim=<arg>         Signal count limit, estimated from n_on, n_off, and alpha
   --t_obs=<arg>         Observation time / s
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
   --alpha=<arg>         Ratio of On to Off region exposures
-  --sigma_bg=<arg>          Estimated rate of backgroud in On region / s
+  --s_bg=<arg>          Estimated rate of background in On region / s
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
   --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
   --Gamma=<arg>         Emission power law index (< 0)

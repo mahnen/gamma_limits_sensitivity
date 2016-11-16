@@ -59,6 +59,7 @@ def main_logic(arguments, dictionary):
               delimiter=','
               )
 
+
 def main():
     version = pkg_resources.require("gamma_limits_sensitivity")[0].version
     arguments = docopt(__doc__, version=version)
