@@ -25,10 +25,7 @@ import gamma_limits_sensitivity as gls
 import numpy as np
 import matplotlib
 
-from helper_functions_for_tests import (
-    get_effective_area_list,
-    get_random_on_off_experiment_no_source
-    )
+from helper_functions_for_tests import get_effective_area_list
 
 
 def test_get_sens_phasespace_figure():
@@ -54,4 +51,17 @@ def test_get_sens_spectrum_figure():
     Test to check if the above function returns matplotlib figure
     '''
     a_eff_list = get_effective_area_list()
-    return
+
+    sens_phasespace_figures, energy_xs, dn_de_ys = zip(*(
+        gls.get_sens_spectrum_figure(
+            sigma_bg=10./3600.,
+            alpha=0.2,
+            t_obs=10.*3600,
+            a_eff_interpol=a_eff_interpol,
+            n_points_to_plot=2
+            ) for a_eff_interpol in a_eff_list
+        )
+    )
+
+    for plot in sens_phasespace_figures:
+        assert isinstance(plot, matplotlib.figure.Figure)

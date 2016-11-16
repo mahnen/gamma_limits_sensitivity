@@ -282,8 +282,11 @@ def get_sens_spectrum_figure(
     time and telescope parameters
     '''
     figure = plt.figure()
-    energy_x = []
-    dn_de_y = []
+
+    energy_x, dn_de_y = plot_sens_spectrum_figure(
+        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot
+        )
+
     return figure, energy_x, dn_de_y
 
 
@@ -522,6 +525,22 @@ def plot_ul_spectrum_figure(
     return energy_x, dn_de_y
 
 
+def plot_sens_spectrum_figure(
+        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot
+        ):
+    '''
+    fill a spectrum figure with the sensitivity
+    integral spectral exclusion zone plot
+    '''
+    energy_x, dn_de_y = plot_ul_spectrum_figure(
+        t_obs,
+        sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs)*t_obs,
+        a_eff_interpol,
+        n_points_to_plot)
+
+    return energy_x, dn_de_y
+
+
 def plot_lambda_s_mesh(
         t_obs,
         lambda_lim,
@@ -603,7 +622,7 @@ def plot_t_obs_mesh(
                 e_0,
                 a_eff_interpol),
             sigma_bg,
-            alpha)
+            alpha)/3600.
         for j in range(pixels_per_line)] for i in range(pixels_per_line)])
 
     # if there is no predefined info about t_obs
@@ -612,10 +631,14 @@ def plot_t_obs_mesh(
     if t_obs is None:
         print_solid = False
         t_obs = np.median(t_obs_s.flatten())
+    else:
+        t_obs = t_obs/3600.
 
     levels = np.array([t_obs/((1.5)**(int(n_levels/2)-i))
                        for i in range(n_levels)])
-    limit_index = np.where(levels == t_obs)[0][0]
+    limit_index = np.where(
+        np.isclose(levels, t_obs)
+        )[0][0]
     linestyles = [linestyles for i in range(n_levels)]
     if print_solid:
         linestyles[limit_index] = 'solid'
