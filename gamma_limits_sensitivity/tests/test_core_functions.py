@@ -136,3 +136,25 @@ def test_li_ma_significance():
     sigma = gls.li_ma_significance(n_on, n_off, alpha)
     assert sigma == result
 
+
+def test_l_lim_li_ma_criterion():
+    '''
+    Test the function yielding l_lim as a function of
+    telescope analysis parameters with respect to the LiMa criterion
+    '''
+    s_bg = 2./3600.  # two per h
+    t_obs = 3600.  # one h
+    alpha = 0.2
+    s_lim = gls.sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.)
+    l_lim = s_lim*t_obs
+    result = 13.486041978777427
+
+    assert np.abs(l_lim-result)/result < 1e-5
+
+    s_bg = 1./3600.  # one per h
+    t_obs = 100.  # 100 s
+    alpha = 0.2
+    s_lim = gls.sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.)
+    l_lim = s_lim*t_obs
+
+    assert l_lim == 10.

@@ -239,7 +239,8 @@ def get_sens_phasespace_figure(
     '''
     figure = plt.figure()
 
-    l_lim = l_lim_li_ma_criterion(s_bg, alpha, t_obs)
+    s_lim = sigma_lim_li_ma_criterion(s_bg, alpha, t_obs)
+    l_lim = s_lim*t_obs
 
     f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
         t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line)
@@ -255,34 +256,6 @@ def get_sens_phasespace_figure(
         )
 
     return figure
-
-
-def l_lim_li_ma_criterion(s_bg, alpha, t_obs):
-    '''
-    This function returns the limit count number
-    from the LiMa criterion
-    '''
-    return 11.3
-
-
-def li_ma_significance(n_on, n_off, alpha):
-    n_on = np.array(n_on, copy=False, ndmin=1)
-    n_off = np.array(n_off, copy=False, ndmin=1)
-
-    with np.errstate(divide='ignore', invalid='ignore'):
-        p_on = n_on / (n_on + n_off)
-        p_off = n_off / (n_on + n_off)
-
-        t1 = n_on * np.log(((1 + alpha) / alpha) * p_on)
-        t2 = n_off * np.log((1 + alpha) * p_off)
-
-        ts = (t1 + t2)
-        significance = np.sqrt(ts * 2)
-
-    significance[np.isnan(significance)] = 0
-    significance[n_on < alpha * n_off] = 0
-
-    return significance
 
 
 def get_sens_spectrum_figure(
@@ -634,3 +607,70 @@ def integral_spectral_exclusion_zone_parameters(
     f_0_calc = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma_calc)
 
     return f_0_calc, gamma_calc
+
+
+def t_obs(gamma, f_0, s_bg, alpha):
+    '''
+    This function calculates the average time to detection,
+    given a power law with the stated parameters, the
+    stated background rate, and alpha
+    '''
+    return
+
+
+def sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.):
+    '''
+    This function returns the limit count rate
+    using the LiMa criterion
+    '''
+    estimated_bg_counts_in_off = s_bg * t_obs / alpha
+    estimated_bg_counts_in_on = s_bg * t_obs
+
+    sigma_lim_min = 0.
+    sigma_lim_max = 1e3  # more than 1k gamma / s is likely unrealistic
+
+    # catch signal rates which will never be measured
+    try:
+        sigma_lim = brentq(lambda x: (
+            li_ma_significance(
+                x*t_obs + estimated_bg_counts_in_on,
+                estimated_bg_counts_in_off,
+                alpha=alpha
+                ) - threshold
+            ), sigma_lim_min, sigma_lim_max)
+    except:
+        sigma_lim = 0.
+
+    # implement the low statistics limit which most authors use:
+    #   "at least 10 excess counts"
+    if sigma_lim*t_obs < 10.:
+        sigma_lim = 10./t_obs
+
+    return sigma_lim
+
+
+def li_ma_significance(n_on, n_off, alpha):
+    '''
+    A function to calculate the significance, according to :
+
+    Li, T-P., and Y-Q. Ma.
+    "Analysis methods for results in gamma-ray astronomy."
+    The Astrophysical Journal 272 (1983): 317-324.
+    '''
+    n_on = np.array(n_on, copy=False, ndmin=1)
+    n_off = np.array(n_off, copy=False, ndmin=1)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        p_on = n_on / (n_on + n_off)
+        p_off = n_off / (n_on + n_off)
+
+        t1 = n_on * np.log(((1 + alpha) / alpha) * p_on)
+        t2 = n_off * np.log((1 + alpha) * p_off)
+
+        ts = (t1 + t2)
+        significance = np.sqrt(ts * 2)
+
+    significance[np.isnan(significance)] = 0
+    significance[n_on < alpha * n_off] = 0
+
+    return significance
