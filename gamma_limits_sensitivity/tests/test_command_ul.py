@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib
 
 from helper_functions_for_tests import (
-    get_a_eff_list,
+    get_effective_area_list,
     get_random_on_off_experiment_no_source
     )
 
@@ -31,14 +31,14 @@ def test_get_ul_phasespace_figure():
     '''
     Test to check if the above function really returns a matplotlib figure
     '''
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
     __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
 
     ul_phasespace_figures = [gls.get_ul_phasespace_figure(
         1.*3600.,
         l_lim,
         a_eff_interpol,
-        pixels_per_line=3
+        pixels_per_line=2
         ) for a_eff_interpol in a_eff_list]
 
     for plot in ul_phasespace_figures:
@@ -49,26 +49,28 @@ def test_get_ul_spectrum_figure():
     '''
     Test to check if the above function really returns a matplotlib figure
     '''
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
     __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
 
-    ul_spectrum_figures = [gls.get_ul_spectrum_figure(
+    ul_spectrum_figures, energy_xs, dNdE_ys = zip(*(gls.get_ul_spectrum_figure(
         1.*3600.,
         l_lim,
         a_eff_interpol,
-        n_points_to_plot=3) for a_eff_interpol in a_eff_list]
+        n_points_to_plot=2) for a_eff_interpol in a_eff_list))
 
     for plot in ul_spectrum_figures:
         assert isinstance(plot, matplotlib.figure.Figure)
 
 
-def test_get_a_eff_figure():
+def test_get_effective_area_figure():
     '''
     Test to check if the above function really returns a matplotlib figure
     '''
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
     a_eff_figures = [
-        gls.get_a_eff_figure(a_eff_interpol) for a_eff_interpol in a_eff_list
+        gls.get_effective_area_figure(a_eff_interpol)
+        for a_eff_interpol
+        in a_eff_list
         ]
 
     for plot in a_eff_figures:

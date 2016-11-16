@@ -6,7 +6,7 @@ import gamma_limits_sensitivity as gls
 import numpy as np
 from scipy import integrate
 
-from helper_functions_for_tests import get_a_eff_list
+from helper_functions_for_tests import get_effective_area_list
 
 
 def test_get_energy_range():
@@ -14,7 +14,7 @@ def test_get_energy_range():
     Test if the function really returns sensible energy ranges
     in units of TeV
     '''
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
 
     for a_eff in a_eff_list:
         e_range = gls.get_energy_range(a_eff)
@@ -49,7 +49,7 @@ def test_get_ul_f_0():
     This also tests effective_area_averaged_flux() and power_law()
     '''
     gamma_test = -2.6
-    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+    a_eff = get_effective_area_list()[2]  # Veritas V5 lowZd
 
     f_0_calc = gls.get_ul_f_0(
         t_obs=7.*3600.,
@@ -69,7 +69,7 @@ def test_sensitive_energy():
     makes sense.
     '''
     gamma_test = -2.6
-    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+    a_eff = get_effective_area_list()[2]  # Veritas V5 lowZd
 
     sensitive_e = gls.sensitive_energy(gamma_test, a_eff)
 
@@ -79,16 +79,17 @@ def test_sensitive_energy():
 
 def test_inverse_sensitive_energy():
     '''
-    Test if the calculation of the inverse 
+    Test if the calculation of the inverse
     sensitive energy (calculation of Gamma) makes sense.
     '''
     gamma_test = -2.6
-    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+    a_eff = get_effective_area_list()[2]  # Veritas V5 lowZd
 
     sensitive_e = gls.sensitive_energy(gamma_test, a_eff)
     gamma_inverse = gls.get_gamma_from_sensitive_energy(sensitive_e, a_eff)
 
-    assert  np.abs(gamma_inverse-gamma_test)/gamma_test < 1e-4
+    assert np.abs(gamma_inverse-gamma_test)/gamma_test < 1e-4
+
 
 def test_integral_spectral_exclusion_zone():
     '''
@@ -97,7 +98,7 @@ def test_integral_spectral_exclusion_zone():
     energy_test = 1.2  # TeV
     l_lim_test = 11.3
     t_obs_test = 7.*3600.  # in s
-    a_eff = get_a_eff_list()[2]  # Veritas V5 lowZd
+    a_eff = get_effective_area_list()[2]  # Veritas V5 lowZd
 
     f_0_result, gamma_result = gls.integral_spectral_exclusion_zone_parameters(
         energy_test, l_lim_test, a_eff, t_obs_test)

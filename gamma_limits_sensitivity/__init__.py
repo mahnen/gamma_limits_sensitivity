@@ -25,20 +25,35 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
     a_eff_interpol = get_effective_area(a_eff)
 
     # make the figures
-    figures = [
-        get_ul_phasespace_figure(
-            t_obs,
-            l_lim,
-            a_eff_interpol,
-            pixels_per_line=plot_resolution),
-        get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol,
-                               n_points_to_plot=plot_resolution),
-        get_sensitive_energy(a_eff_interpol),
-        get_a_eff_figure(a_eff_interpol)
-        ]
+    phasespace_figure = get_ul_phasespace_figure(
+        t_obs,
+        l_lim,
+        a_eff_interpol,
+        pixels_per_line=plot_resolution)
+
+    spectrum_figure, energy_x, dNdE_y = get_ul_spectrum_figure(
+        t_obs, l_lim, a_eff_interpol, n_points_to_plot=plot_resolution)
+
+    sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
+        a_eff_interpol
+        )
+    a_eff_figure = get_effective_area_figure(a_eff_interpol)
+
+    figures = {
+        'phasespace': phasespace_figure,
+        'spectrum': spectrum_figure,
+        'sensitive_energy': sensitive_energy_figure,
+        'effective_area': a_eff_figure
+        }
 
     dictionary = {
-        'plots': figures
+        'plots': figures,
+        'data': {
+            'integral_spectral_exclusion_zone':
+                np.transpose((energy_x, dNdE_y)),
+            'sensitive_energy':
+                np.transpose((gamma_s, e_sens_s))
+            }
         }
 
     return dictionary
@@ -56,7 +71,9 @@ def sensitivity(s_bg, alpha, t_obs, a_eff):
 
     It returns a dictionary with results.
     '''
-    figures = [plt.figure()]
+    figures = {
+        'spectrum': plt.figure()
+        }
     dictionary = {
         'plots': figures
         }
@@ -80,8 +97,13 @@ def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff):
 
     It returns a dictionary with results.
     '''
-    figures = [plt.figure()]
-    times = [1., 2., 3.]
+    figures = {
+        'spectrum': plt.figure()
+        }
+    time_confidence_interval = [1., 2., 3.]
+    times = {
+        'CI': time_confidence_interval
+        }
 
     dictionary = {
         'times': times,
@@ -91,7 +113,7 @@ def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff):
     return dictionary
 
 
-def get_a_eff_test_relative_paths():
+def get_effective_area_test_relative_paths():
     '''
     Helper function to get the paths of stored effective areas
     '''
@@ -154,25 +176,16 @@ def get_ul_phasespace_figure(
     return figure
 
 
-def get_sensitive_energy(a_eff_interpol):
+def get_sensitive_energy_figure(a_eff_interpol):
     '''
     Get a plot showint the sensitive energy
     given the effective area a_eff_interpol
     '''
     figure = plt.figure()
 
-    alpha_range = [-6., -1.0]
-    gammas = np.arange(alpha_range[0], alpha_range[1], 0.1)
-    e_sens = np.array([sensitive_energy(i, a_eff_interpol) for i in gammas])
+    gammas, e_sens = plot_sensitive_energy(a_eff_interpol)
 
-    plt.plot(gammas, e_sens, 'k')
-
-    plt.title('sensitive energy E$_{sens}$($\\Gamma$)')
-    plt.semilogy()
-    plt.ylabel('E$_{sens}$ / GeV')
-    plt.xlabel('$\\Gamma$')
-
-    return figure
+    return figure, gammas, e_sens
 
 
 def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
@@ -180,58 +193,26 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     Get the integral spectral exclusion zone for the 'ul' command
     '''
     figure = plt.figure()
-    gamma_range = [-6, -0.2]
 
-    energy_limits = [
-        sensitive_energy(gamma_range[0], a_eff_interpol),
-        sensitive_energy(gamma_range[1], a_eff_interpol)]
-    e_x = 10**np.linspace(
-            np.log10(energy_limits[0]),
-            np.log10(energy_limits[1]),
-            n_points_to_plot
+    energy_x, dNdE_y = plot_ul_spectrum_figure(
+        t_obs,
+        l_lim,
+        a_eff_interpol,
+        n_points_to_plot
         )
-    e_y = [integral_spectral_exclusion_zone(
-                energy,
-                l_lim,
-                a_eff_interpol,
-                t_obs)
-           for energy
-           in e_x
-           ]
-    e_y = np.array(e_y)
 
-    plt.plot(e_x, e_y, 'k')
-    plt.loglog()
-    plt.title('Integral Spectral Exclusion Zone, t$_{obs}$' +
-              ('={0:1.1f} h'.format(t_obs/3600.)))
-    plt.xlabel('E / TeV')
-    plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
-
-    return figure
+    return figure, energy_x, dNdE_y
 
 
-def get_a_eff_figure(a_eff_interpol):
+def get_effective_area_figure(a_eff_interpol):
     '''
     Get a plot showing the effective area
     referenced by a_eff_interpol
     '''
     figure = plt.figure()
-    start = a_eff_interpol.x.min()
-    stop = a_eff_interpol.x.max()
-    samples = 1000
 
-    energy_samples = np.linspace(start, stop, samples)
-    area_samples = np.array([
-        a_eff_interpol(energy)
-        for energy
-        in energy_samples
-        ])
-    plt.plot(np.power(10, energy_samples), area_samples/10000., 'k')
+    plot_effective_area(a_eff_interpol)
 
-    plt.loglog()
-    plt.title('Effective Area')
-    plt.xlabel('Energy / TeV')
-    plt.ylabel('A$_{eff}$ / m$^2$')
     return figure
 
 
@@ -307,8 +288,8 @@ def get_gamma_from_sensitive_energy(E_sens, a_eff_interpol):
 
     try:
         gamma_num = brentq(lambda x: (sensitive_energy(
-                gamma = x,
-                a_eff_interpol = a_eff_interpol
+                gamma=x,
+                a_eff_interpol=a_eff_interpol
                 ) - E_sens
             ), gamma_min, gamma_max
         )
@@ -365,6 +346,79 @@ def power_law(energy, f_0, gamma, e_0=1.):
     A power law function as defined in the paper
     '''
     return f_0*(energy/e_0)**(gamma)
+
+
+def plot_effective_area(a_eff_interpol):
+    start = a_eff_interpol.x.min()
+    stop = a_eff_interpol.x.max()
+    samples = 1000
+
+    energy_samples = np.linspace(start, stop, samples)
+    area_samples = np.array([
+        a_eff_interpol(energy)
+        for energy
+        in energy_samples
+        ])
+    plt.plot(np.power(10, energy_samples), area_samples/10000., 'k')
+
+    plt.loglog()
+    plt.title('Effective Area')
+    plt.xlabel('Energy / TeV')
+    plt.ylabel('A$_{eff}$ / m$^2$')
+    return
+
+
+def plot_sensitive_energy(a_eff_interpol):
+    '''
+    fill a sensitive energy plot figure
+    '''
+    alpha_range = [-6., -0.5]
+    stepsize = 0.1
+    gammas = np.arange(alpha_range[0], alpha_range[1]+stepsize, stepsize)
+    e_sens = np.array([sensitive_energy(i, a_eff_interpol) for i in gammas])
+
+    plt.plot(gammas, e_sens, 'k')
+
+    plt.title('sensitive energy E$_{sens}$($\\Gamma$)')
+    plt.semilogy()
+    plt.ylabel('E$_{sens}$ / GeV')
+    plt.xlabel('$\\Gamma$')
+
+    return gammas, e_sens
+
+
+def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
+    '''
+    fill a ul spectrum figure with the integral spectral exclusion zone plot
+    '''
+    gamma_range = [-6, -0.2]
+
+    energy_limits = [
+        sensitive_energy(gamma_range[0], a_eff_interpol),
+        sensitive_energy(gamma_range[1], a_eff_interpol)]
+    energy_x = 10**np.linspace(
+            np.log10(energy_limits[0]),
+            np.log10(energy_limits[1]),
+            n_points_to_plot
+        )
+    dNdE_y = [integral_spectral_exclusion_zone(
+                energy,
+                l_lim,
+                a_eff_interpol,
+                t_obs)
+              for energy
+              in energy_x
+              ]
+    dNdE_y = np.array(dNdE_y)
+
+    plt.plot(energy_x, dNdE_y, 'k')
+    plt.loglog()
+    plt.title('Integral Spectral Exclusion Zone, t$_{obs}$' +
+              ('={0:1.1f} h'.format(t_obs/3600.)))
+    plt.xlabel('E / TeV')
+    plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
+
+    return energy_x, dNdE_y
 
 
 def plot_lambda_s(
@@ -447,5 +501,5 @@ def integral_spectral_exclusion_zone_parameters(
     '''
     gamma_calc = get_gamma_from_sensitive_energy(energy, a_eff_interpol)
     f_0_calc = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma_calc)
-    
+
     return f_0_calc, gamma_calc

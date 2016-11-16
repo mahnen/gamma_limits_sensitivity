@@ -6,7 +6,7 @@ import gamma_limits_sensitivity as gls
 import scipy
 
 from helper_functions_for_tests import (
-    get_a_eff_list,
+    get_effective_area_list,
     get_random_on_off_experiment_no_source
     )
 
@@ -17,7 +17,7 @@ def test_get_effective_area():
     '''
 
     # build path to test files
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
 
     for a_eff in a_eff_list:
         # check that it is interpolation function
@@ -42,7 +42,7 @@ def test_effective_area_interpolation():
     .
     .
     '''
-    a_eff_list = get_a_eff_list()
+    a_eff_list = get_effective_area_list()
 
     for a_eff in a_eff_list:
         # check that log10(energy/TeV) is > 1 MeV

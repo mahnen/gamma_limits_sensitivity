@@ -42,7 +42,7 @@ and gets some plots again and the estimated time to detection printed to stdout.
 import gamma_limits_sensitivity as gls
 import matplotlib
 
-from helper_functions_for_tests import get_a_eff_paths
+from helper_functions_for_tests import get_effective_area_paths
 
 
 def test_high_level_api_ul():
@@ -51,7 +51,7 @@ def test_high_level_api_ul():
     story.
 
     '''
-    a_eff_path = get_a_eff_paths()[0]
+    a_eff_path = get_effective_area_paths()[0]
 
     dictionary = gls.upper_limit(
         t_obs=1*3600,
@@ -60,8 +60,10 @@ def test_high_level_api_ul():
         plot_resolution=3
         )
 
-    for plot in dictionary['plots']:
-        assert isinstance(plot, matplotlib.figure.Figure)
+    for plot_name in dictionary['plots']:
+        assert isinstance(
+            dictionary['plots'][plot_name], matplotlib.figure.Figure
+            )
 
 
 def test_high_level_api_sens():
@@ -69,7 +71,7 @@ def test_high_level_api_sens():
     This test tests the cli sens functionality explained in above user story.
 
     '''
-    a_eff_path = get_a_eff_paths()[1]
+    a_eff_path = get_effective_area_paths()[1]
 
     dictionary = gls.sensitivity(
         s_bg=10,
@@ -78,8 +80,10 @@ def test_high_level_api_sens():
         a_eff=a_eff_path,
         )
 
-    for plot in dictionary['plots']:
-        assert isinstance(plot, matplotlib.figure.Figure)
+    for plot_name in dictionary['plots']:
+        assert isinstance(
+            dictionary['plots'][plot_name], matplotlib.figure.Figure
+            )
 
 
 def test_high_level_api_predict():
@@ -88,7 +92,7 @@ def test_high_level_api_predict():
     in above user story.
 
     '''
-    a_eff_path = get_a_eff_paths()[2]
+    a_eff_path = get_effective_area_paths()[2]
 
     dictionary = gls.predict(
         s_bg=10,
@@ -101,8 +105,11 @@ def test_high_level_api_predict():
         a_eff=a_eff_path,
         )
 
-    for plot in dictionary['plots']:
-        assert isinstance(plot, matplotlib.figure.Figure)
+    for plot_name in dictionary['plots']:
+        assert isinstance(
+            dictionary['plots'][plot_name], matplotlib.figure.Figure
+            )
 
-    for time_quantile in dictionary['times']:
-        assert time_quantile >= 0
+    for time_names in dictionary['times']:
+        for time in dictionary['times'][time_names]:
+            assert time >= 0

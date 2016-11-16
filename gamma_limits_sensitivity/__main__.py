@@ -27,6 +27,8 @@ from docopt import docopt
 import pkg_resources
 import gamma_limits_sensitivity as gls
 import matplotlib.pyplot as plt
+import numpy as np
+import datetime
 
 
 def main():
@@ -42,14 +44,31 @@ def main():
                 a_eff=arguments['--A_eff'],
             )
 
+            # if out path is none, just show the data
             if arguments['--out'] is None:
                 plt.show()
+            # else save to disk
             else:
-                for i, plot in enumerate(dictionary['plots']):
-                    plot.savefig(
-                        arguments['--out']+str(i)+'.png', bbox_inches='tight')
-                    plot.savefig(
-                        arguments['--out']+str(i)+'.pdf', bbox_inches='tight')
+                for plot_name in dictionary['plots']:
+                    dictionary['plots'][plot_name].savefig(
+                        arguments['--out']+'/'+plot_name+'.png',
+                        bbox_inches='tight'
+                        )
+                    dictionary['plots'][plot_name].savefig(
+                        arguments['--out']+'/'+plot_name+'.pdf',
+                        bbox_inches='tight'
+                        )
+                for data_name in dictionary['data']:
+                    np.savetxt(
+                        arguments['--out']+'/'+data_name+'.csv',
+                        dictionary['data'][data_name],
+                        fmt='%.6e',
+                        header=(data_name + ', written: ' +
+                                datetime.datetime.now().strftime(
+                                    "%Y-%m-%d %H:%M:%S"
+                                    )
+                                ),
+                        delimiter=',')
 
         elif arguments['sens']:
             dictionary = gls.sensitivity(
