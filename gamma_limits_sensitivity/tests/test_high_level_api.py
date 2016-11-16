@@ -15,8 +15,8 @@ and some nice plots return
 
 --------------------------------------------------------------
 
-A sunny day ... her boss is really interessted in knowing what
-her newly developed telescope is actually capable of, independend of the source
+A sunny day ... her boss is really interested in knowing what
+her newly developed telescope is actually capable of, independent of the source
 
 So she calls:
 
@@ -26,7 +26,7 @@ and gets plots
 
 --------------------------------------------------------------
 
-Another days she likes an undicsovered source very much and
+Another days she likes an undiscovered source very much and
 would like to know if her gamma ray telescope can detect this source in a
 reasonable amount of time
 
@@ -47,7 +47,7 @@ from helper_functions_for_tests import get_effective_area_paths
 
 def test_high_level_api_ul():
     '''
-    This test tests the cli upper limit functionality explained in above user
+    This test tests the 'upper' limit functionality explained in above user
     story.
 
     '''
@@ -68,7 +68,7 @@ def test_high_level_api_ul():
 
 def test_high_level_api_sens():
     '''
-    This test tests the cli sens functionality explained in above user story.
+    This test tests the 'sens' functionality explained in above user story.
 
     '''
     a_eff_path = get_effective_area_paths()[1]
@@ -88,7 +88,7 @@ def test_high_level_api_sens():
 
 def test_high_level_api_predict():
     '''
-    This test tests the cli predict functionality explained
+    This test tests the 'predict' functionality explained
     in above user story.
 
     '''

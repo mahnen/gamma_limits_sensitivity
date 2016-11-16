@@ -7,11 +7,11 @@ The logic behind the UL calculation is the following:
 
 3) calculate the ul integral spectral exclusion zone and make plots:
 
-    3.1) in phasespace
+    3.1) in phase space
 
     3.2) in spectrum
 
-    3.3) the efective area for crosscheck
+    3.3) the effective area for crosscheck
 
     3.4) the sensitive energy
 

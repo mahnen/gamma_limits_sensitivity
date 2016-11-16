@@ -173,6 +173,20 @@ def get_effective_area(a_eff_path):
     return a_eff_interpol
 
 
+def prepare_phasespace_meshes(
+        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line, gamma=-2.6):
+    '''
+    determine parameter plot ranges
+    '''
+    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma)
+    f_0_limits, gamma_limits = get_f_0_gamma_limits(f_0, gamma)
+    f_0_mesh, gamma_mesh = get_f_0_gamma_mesh(
+        f_0_limits,
+        gamma_limits,
+        pixels_per_line)
+    return f_0_mesh, gamma_mesh
+
+
 def get_ul_phasespace_figure(
         t_obs,
         l_lim,
@@ -181,26 +195,22 @@ def get_ul_phasespace_figure(
         pixels_per_line=30):
     '''
     Function to generate the plot of average counts
-    lambda_s in the phasespace of the power law.
+    lambda_s in the phase space of the power law.
     It will indicate the limit lambda_lim in the same plot.
     '''
     figure = plt.figure()
 
-    # determine parameter plot ranges
-    gamma = -2.6
-    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma)
-    f_0_limits, gamma_limits = get_f_0_gamma_limits(f_0, gamma)
-    f_0_mesh, gamma_mesh = get_f_0_gamma_mesh(
-        f_0_limits,
-        gamma_limits,
-        pixels_per_line)
+    f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
+        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line)
 
-    lambda_s_mesh = plot_lambda_s(
-        f_0_mesh,
-        gamma_mesh,
-        e_0, a_eff_interpol,
+    lambda_s_mesh = plot_lambda_s_mesh(
         t_obs,
-        l_lim)
+        l_lim,
+        a_eff_interpol,
+        e_0,
+        f_0_mesh,
+        gamma_mesh
+        )
 
     return figure
 
@@ -224,18 +234,62 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
 def get_sens_phasespace_figure(
         s_bg, alpha, t_obs, a_eff_interpol, e_0=1., pixels_per_line=30):
     '''
-    This command produces a phasespace figure and fills it with
+    This command produces a phase space figure and fills it with
     time to detection for given telescope parameters
     '''
     figure = plt.figure()
+
+    l_lim = l_lim_li_ma_criterion(s_bg, alpha, t_obs)
+
+    f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
+        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line)
+
+    t_obs_mesh = plot_t_obs_mesh(
+        s_bg,
+        alpha,
+        t_obs,
+        a_eff_interpol,
+        e_0,
+        f_0_mesh,
+        gamma_mesh
+        )
+
     return figure
+
+
+def l_lim_li_ma_criterion(s_bg, alpha, t_obs):
+    '''
+    This function returns the limit count number
+    from the LiMa criterion
+    '''
+    return 11.3
+
+
+def li_ma_significance(n_on, n_off, alpha):
+    n_on = np.array(n_on, copy=False, ndmin=1)
+    n_off = np.array(n_off, copy=False, ndmin=1)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        p_on = n_on / (n_on + n_off)
+        p_off = n_off / (n_on + n_off)
+
+        t1 = n_on * np.log(((1 + alpha) / alpha) * p_on)
+        t2 = n_off * np.log((1 + alpha) * p_off)
+
+        ts = (t1 + t2)
+        significance = np.sqrt(ts * 2)
+
+    significance[np.isnan(significance)] = 0
+    significance[n_on < alpha * n_off] = 0
+
+    return significance
 
 
 def get_sens_spectrum_figure(
         s_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=21):
     '''
     This command produces a spectrum figure and fills it with the
-    integral spectral exclusioin zone for a given observation
+    integral spectral exclusion zone for a given observation
     time and telescope parameters
     '''
     figure = plt.figure()
@@ -246,7 +300,7 @@ def get_sens_spectrum_figure(
 
 def get_sensitive_energy_figure(a_eff_interpol):
     '''
-    Get a plot showint the sensitive energy
+    Get a plot showing the sensitive energy
     given the effective area a_eff_interpol
     '''
     figure = plt.figure()
@@ -281,7 +335,7 @@ def get_energy_range(a_eff_interpol):
 
 def get_f_0_gamma_limits(f_0, gamma):
     '''
-    Güet a nice box power law phase space box for plotting
+    Get a nice box power law phase space box for plotting
     '''
     f_0_limits = [f_0*0.1, f_0*1.9]
     gamma_limits = [gamma-1., gamma+1.]
@@ -292,7 +346,7 @@ def get_f_0_gamma_limits(f_0, gamma):
 
 def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
     '''
-    Generate two numpy.meshgrids for 2d plotting
+    Generate two numpy.meshgrids for 2D plotting
     '''
     f_0_stepsize = (f_0_limits[1]-f_0_limits[0])/pixels_per_line
     gamma_stepsize = (gamma_limits[1]-gamma_limits[0])/pixels_per_line
@@ -477,20 +531,20 @@ def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
     return energy_x, dn_de_y
 
 
-def plot_lambda_s(
-        f_0_mesh,
-        gamma_mesh,
-        e_0,
-        a_eff_interpol,
+def plot_lambda_s_mesh(
         t_obs,
         l_lim,
+        a_eff_interpol,
+        e_0,
+        f_0_mesh,
+        gamma_mesh,
         n_levels=9,
         linestyles='dashed',
         linewidths=1,
         colors='k'
         ):
     '''
-    Function to get the lambda_s plot in the phasespace of the power law
+    Function to get the lambda_s plot in the phase space of the power law
     '''
     pixels_per_line = np.shape(f_0_mesh)[0]
 
@@ -527,6 +581,27 @@ def plot_lambda_s(
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
     return lambda_s
+
+
+def plot_t_obs_mesh(
+        s_bg,
+        alpha,
+        t_obs,
+        a_eff_interpol,
+        e_0,
+        f_0_mesh,
+        gamma_mesh,
+        n_levels=9,
+        linestyles='dashed',
+        linewidths=1,
+        colors='k'
+        ):
+    '''
+    This function puts the times until detection into
+    a plot in phase space (f_0, Gamma) for given telescope
+    analysis parameters
+    '''
+    return
 
 
 def integral_spectral_exclusion_zone(energy, l_lim, a_eff_interpol, t_obs):

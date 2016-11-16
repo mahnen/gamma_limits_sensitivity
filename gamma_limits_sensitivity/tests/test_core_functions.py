@@ -110,6 +110,29 @@ def test_integral_spectral_exclusion_zone():
     assert gamma_result < 0.5
 
     # cross check that the sensitive energy for inferred gamma is actually
-    # equal (to one permille) to the one calculated with the Lagrangian result
+    # equal (to one permil) to the one calculated with the Lagrangian result
     sensitive_e = gls.sensitive_energy(gamma_result, a_eff)
     assert np.abs(sensitive_e-energy_test)/energy_test < 1e-4
+
+
+def test_li_ma_significance():
+    '''
+    This test the significance calculation
+    '''
+    n_on = 15
+    n_off = 10,
+    alpha = 0.2
+    result = 4.8732568
+
+    sigma = gls.li_ma_significance(n_on, n_off, alpha)
+    assert np.abs(sigma-result)/result < 1e-5
+
+    # check for correct handling of strange numbers
+    n_on = 0
+    n_off = 1,
+    alpha = 0.1
+    result = 0.
+
+    sigma = gls.li_ma_significance(n_on, n_off, alpha)
+    assert sigma == result
+

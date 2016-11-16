@@ -14,7 +14,7 @@ Options:
   --A_eff=<file>        File with samples from the effective area after all cuts
   --out=<path>          Optional argument for specifying the output directory
   --alpha=<arg>         Ratio of On to Off region exposures
-  --s_bg=<arg>          Estimated rate of backgroud in On region / s
+  --s_bg=<arg>          Estimated rate of background in On region / s
   --f_0=<arg>           Flux normalization / [1/(cm^2 s TeV)]
   --df_0=<arg>          Error of the flux normalization (1 sigma) / [1/(cm^2 s TeV)]
   --Gamma=<arg>         Emission power law index (< 0)
