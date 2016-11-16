@@ -31,7 +31,7 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
         a_eff_interpol,
         pixels_per_line=plot_resolution)
 
-    spectrum_figure, energy_x, dNdE_y = get_ul_spectrum_figure(
+    spectrum_figure, energy_x, dn_de_y = get_ul_spectrum_figure(
         t_obs, l_lim, a_eff_interpol, n_points_to_plot=plot_resolution)
 
     sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
@@ -50,7 +50,7 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
         'plots': figures,
         'data': {
             'integral_spectral_exclusion_zone':
-                np.transpose((energy_x, dNdE_y)),
+                np.transpose((energy_x, dn_de_y)),
             'sensitive_energy':
                 np.transpose((gamma_s, e_sens_s))
             }
@@ -194,14 +194,14 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     '''
     figure = plt.figure()
 
-    energy_x, dNdE_y = plot_ul_spectrum_figure(
+    energy_x, dn_de_y = plot_ul_spectrum_figure(
         t_obs,
         l_lim,
         a_eff_interpol,
         n_points_to_plot
         )
 
-    return figure, energy_x, dNdE_y
+    return figure, energy_x, dn_de_y
 
 
 def get_effective_area_figure(a_eff_interpol):
@@ -349,6 +349,10 @@ def power_law(energy, f_0, gamma, e_0=1.):
 
 
 def plot_effective_area(a_eff_interpol):
+    '''
+    fill a plot with the effective energy from the supplied
+    interpolated data
+    '''
     start = a_eff_interpol.x.min()
     stop = a_eff_interpol.x.max()
     samples = 1000
@@ -401,24 +405,24 @@ def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
             np.log10(energy_limits[1]),
             n_points_to_plot
         )
-    dNdE_y = [integral_spectral_exclusion_zone(
+    dn_de_y = [integral_spectral_exclusion_zone(
                 energy,
                 l_lim,
                 a_eff_interpol,
                 t_obs)
-              for energy
-              in energy_x
-              ]
-    dNdE_y = np.array(dNdE_y)
+               for energy
+               in energy_x
+               ]
+    dn_de_y = np.array(dn_de_y)
 
-    plt.plot(energy_x, dNdE_y, 'k')
+    plt.plot(energy_x, dn_de_y, 'k')
     plt.loglog()
     plt.title('Integral Spectral Exclusion Zone, t$_{obs}$' +
               ('={0:1.1f} h'.format(t_obs/3600.)))
     plt.xlabel('E / TeV')
     plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
 
-    return energy_x, dNdE_y
+    return energy_x, dn_de_y
 
 
 def plot_lambda_s(
