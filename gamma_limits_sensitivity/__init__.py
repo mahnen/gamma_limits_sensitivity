@@ -140,17 +140,53 @@ def predict(
 
     It returns a dictionary with results.
     '''
+    a_eff_interpol = get_effective_area(a_eff)
+
+    # make the figures
+    phasespace_figure, t_obs_est = get_predict_phasespace_figure(
+        sigma_bg,
+        alpha,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        pixels_per_line=plot_resolution)
+
+    spectrum_figure, energy_x, dn_de_ys = get_predict_spectrum_figure(
+        sigma_bg,
+        alpha,
+        t_obs_est,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        n_points_to_plot=plot_resolution
+        )
+
+    sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
+        a_eff_interpol
+        )
+    a_eff_figure = get_effective_area_figure(a_eff_interpol)
+
     figures = {
-        'spectrum': plt.figure()
-        }
-    time_confidence_interval = [1., 2., 3.]
-    times = {
-        'CI': time_confidence_interval
+        # 'sens_phasespace': phasespace_figure,
+        # 'sens_integral_spectral_exclusion_zone': spectrum_figure,
+        'sens_sensitive_energy': sensitive_energy_figure,
+        'sens_effective_area': a_eff_figure
         }
 
     dictionary = {
-        'times': times,
-        'plots': figures
+        'plots': figures,
+        'data': {
+            # 'sens_integral_spectral_exclusion_zone':
+            #    np.transpose((energy_x, dn_de_y)),
+            'sens_sensitive_energy':
+                np.transpose((gamma_s, e_sens_s))
+            }
         }
 
     return dictionary
@@ -288,6 +324,53 @@ def get_sens_spectrum_figure(
         )
 
     return figure, energy_x, dn_de_y
+
+
+def get_predict_phasespace_figure(
+        sigma_bg,
+        alpha,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        pixels_per_line=30
+        ):
+    '''
+    Description ... [TODO]
+    '''
+    phasespace_figure = plt.figure()
+    t_obs_est = [0., 0., 0.]
+    return phasespace_figure, t_obs_est
+
+
+def get_predict_spectrum_figure(
+        sigma_bg,
+        alpha,
+        t_obs_est,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        n_points_to_plot=21
+        ):
+    '''
+    This function generates a spectral plot from
+    precalculated times of observation until detection
+    for a specific telescope analysis
+
+    It shows the integral spectral exclusion zone
+    for the median time until detection, and the
+    integral spectral exclusion zones for half that time
+    and double that time.
+    '''
+    spectrum_figure = plt.figure()
+    energy_x = [0.]
+    dn_de_ys = [[0., 0.], [0., 0.], [0., 0.]]
+    return spectrum_figure, energy_x, dn_de_ys
 
 
 def get_sensitive_energy_figure(a_eff_interpol):

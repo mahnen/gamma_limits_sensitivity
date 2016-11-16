@@ -112,6 +112,5 @@ def test_high_level_api_predict():
             dictionary['plots'][plot_name], matplotlib.figure.Figure
             )
 
-    for time_names in dictionary['times']:
-        for time in dictionary['times'][time_names]:
-            assert time >= 0
+    # for data_name in dictionary['data']:
+    #     assert dictionary['data'][data_name]

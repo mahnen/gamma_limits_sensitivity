@@ -11,5 +11,4 @@ install:
 script:
 - py.test --cov gamma_limits_sensitivity
 after_success:
-- codecov
 - bash <(curl -s https://codecov.io/bash)
