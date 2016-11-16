@@ -40,7 +40,7 @@ def main():
         if arguments['ul']:
             dictionary = gls.upper_limit(
                 t_obs=float(arguments['--t_obs']),
-                l_lim=float(arguments['--l_lim']),
+                lambda_lim=float(arguments['--l_lim']),
                 a_eff=arguments['--A_eff'],
             )
 
@@ -72,7 +72,7 @@ def main():
 
         elif arguments['sens']:
             dictionary = gls.sensitivity(
-                s_bg=float(arguments['--s_bg']),
+                sigma_bg=float(arguments['--s_bg']),
                 alpha=float(arguments['--alpha']),
                 t_obs=float(arguments['--t_obs']),
                 a_eff=arguments['--A_eff'],
@@ -80,7 +80,7 @@ def main():
 
         elif arguments['predict']:
             dictionary = gls.predict(
-                s_bg=float(arguments['--s_bg']),
+                sigma_bg=float(arguments['--s_bg']),
                 alpha=float(arguments['--alpha']),
                 f_0=float(arguments['--f_0']),
                 df_0=float(arguments['--df_0']),

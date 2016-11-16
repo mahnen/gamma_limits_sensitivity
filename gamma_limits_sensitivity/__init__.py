@@ -10,13 +10,13 @@ import numpy as np
 import os
 
 
-def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
+def upper_limit(t_obs, lambda_lim, a_eff, plot_resolution=30):
     '''
     This function generates all plots for the command 'ul' from
     input data. It takes:
 
     t_obs   in seconds
-    l_lim   from Rolke, Knoetig, ...
+    lambda_lim   from Rolke, Knoetig, ...
     a_eff   A path to the file with effective area over true energy after cuts
     plot_resolution    a parameter for running tests faster
 
@@ -27,12 +27,12 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
     # make the figures
     phasespace_figure = get_ul_phasespace_figure(
         t_obs,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         pixels_per_line=plot_resolution)
 
     spectrum_figure, energy_x, dn_de_y = get_ul_spectrum_figure(
-        t_obs, l_lim, a_eff_interpol, n_points_to_plot=plot_resolution)
+        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot=plot_resolution)
 
     sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
         a_eff_interpol
@@ -59,12 +59,12 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
     return dictionary
 
 
-def sensitivity(s_bg, alpha, t_obs, a_eff, plot_resolution=30):
+def sensitivity(sigma_bg, alpha, t_obs, a_eff, plot_resolution=30):
     '''
     This function generates all plots for the command 'sens' from
     input data. It takes:
 
-    s_bg    in 1/seconds
+    sigma_bg    in 1/seconds
     alpha   on/off exposure ratio
     t_obs   observation time in seconds
     a_eff   A path to the file with effective area over true energy after cuts
@@ -75,14 +75,19 @@ def sensitivity(s_bg, alpha, t_obs, a_eff, plot_resolution=30):
 
     # make the figures
     phasespace_figure = get_sens_phasespace_figure(
-        s_bg,
+        sigma_bg,
         alpha,
         t_obs,
         a_eff_interpol,
         pixels_per_line=plot_resolution)
 
     spectrum_figure, energy_x, dn_de_y = get_sens_spectrum_figure(
-        s_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=plot_resolution)
+        sigma_bg,
+        alpha,
+        t_obs,
+        a_eff_interpol,
+        n_points_to_plot=plot_resolution
+        )
 
     sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
         a_eff_interpol
@@ -110,12 +115,21 @@ def sensitivity(s_bg, alpha, t_obs, a_eff, plot_resolution=30):
 
 
 def predict(
-        s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff, plot_resolution=30):
+        sigma_bg,
+        alpha,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff,
+        plot_resolution=30
+        ):
     '''
     This function generates all plots for the command 'predict' from
     input data. It takes:
 
-    s_bg    in 1/seconds
+    sigma_bg    in 1/seconds
     alpha   on/off exposure ratio
     f_0     flux normalization in 1/(cm^2 s TeV)
     df_0    flux normalization error 1 sigma 1/(cm^2 s TeV)
@@ -174,11 +188,11 @@ def get_effective_area(a_eff_path):
 
 
 def prepare_phasespace_meshes(
-        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line, gamma=-2.6):
+        t_obs, lambda_lim, a_eff_interpol, e_0, pixels_per_line, gamma=-2.6):
     '''
     determine parameter plot ranges
     '''
-    f_0 = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma)
+    f_0 = get_ul_f_0(t_obs, lambda_lim, a_eff_interpol, e_0, gamma)
     f_0_limits, gamma_limits = get_f_0_gamma_limits(f_0, gamma)
     f_0_mesh, gamma_mesh = get_f_0_gamma_mesh(
         f_0_limits,
@@ -189,7 +203,7 @@ def prepare_phasespace_meshes(
 
 def get_ul_phasespace_figure(
         t_obs,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         e_0=1.,
         pixels_per_line=30):
@@ -201,11 +215,11 @@ def get_ul_phasespace_figure(
     figure = plt.figure()
 
     f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
-        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line)
+        t_obs, lambda_lim, a_eff_interpol, e_0, pixels_per_line)
 
     lambda_s_mesh = plot_lambda_s_mesh(
         t_obs,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         e_0,
         f_0_mesh,
@@ -215,7 +229,9 @@ def get_ul_phasespace_figure(
     return figure
 
 
-def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
+def get_ul_spectrum_figure(
+        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot=21
+        ):
     '''
     Get the integral spectral exclusion zone for the 'ul' command
     '''
@@ -223,7 +239,7 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
 
     energy_x, dn_de_y = plot_ul_spectrum_figure(
         t_obs,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         n_points_to_plot
         )
@@ -232,34 +248,34 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
 
 
 def get_sens_phasespace_figure(
-        s_bg, alpha, t_obs, a_eff_interpol, e_0=1., pixels_per_line=30):
+        sigma_bg, alpha, t_obs, a_eff_interpol, e_0=1., pixels_per_line=30):
     '''
     This command produces a phase space figure and fills it with
     time to detection for given telescope parameters
     '''
     figure = plt.figure()
 
-    s_lim = sigma_lim_li_ma_criterion(s_bg, alpha, t_obs)
-    l_lim = s_lim*t_obs
+    s_lim = sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs)
+    lambda_lim = s_lim*t_obs
 
     f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
-        t_obs, l_lim, a_eff_interpol, e_0, pixels_per_line)
+        t_obs, lambda_lim, a_eff_interpol, e_0, pixels_per_line)
 
     t_obs_mesh = plot_t_obs_mesh(
-        s_bg,
+        sigma_bg,
         alpha,
-        t_obs,
         a_eff_interpol,
         e_0,
         f_0_mesh,
-        gamma_mesh
+        gamma_mesh,
+        t_obs=t_obs
         )
 
     return figure
 
 
 def get_sens_spectrum_figure(
-        s_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=21):
+        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=21):
     '''
     This command produces a spectrum figure and fills it with the
     integral spectral exclusion zone for a given observation
@@ -333,12 +349,12 @@ def get_f_0_gamma_mesh(f_0_limits, gamma_limits, pixels_per_line):
     return f_0_mesh, gamma_mesh
 
 
-def get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma):
+def get_ul_f_0(t_obs, lambda_lim, a_eff_interpol, e_0, gamma):
     '''
     Calculate f_0 on the exclusion line from solving the boundary condition
     lambda_lim = lambda_s
     '''
-    return l_lim / t_obs / effective_area_averaged_flux(
+    return lambda_lim / t_obs / effective_area_averaged_flux(
         gamma, e_0, a_eff_interpol)
 
 
@@ -470,7 +486,9 @@ def plot_sensitive_energy(a_eff_interpol):
     return gammas, e_sens
 
 
-def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
+def plot_ul_spectrum_figure(
+        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot
+        ):
     '''
     fill a ul spectrum figure with the integral spectral exclusion zone plot
     '''
@@ -486,7 +504,7 @@ def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
         )
     dn_de_y = [integral_spectral_exclusion_zone(
                 energy,
-                l_lim,
+                lambda_lim,
                 a_eff_interpol,
                 t_obs)
                for energy
@@ -506,7 +524,7 @@ def plot_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot):
 
 def plot_lambda_s_mesh(
         t_obs,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         e_0,
         f_0_mesh,
@@ -527,9 +545,9 @@ def plot_lambda_s_mesh(
         a_eff_interpol=a_eff_interpol
         ) for j in range(pixels_per_line)] for i in range(pixels_per_line)])
 
-    levels = np.array([l_lim/((1.5)**(int(n_levels/2)-i))
+    levels = np.array([lambda_lim/((1.5)**(int(n_levels/2)-i))
                        for i in range(n_levels)])
-    limit_index = np.where(levels == l_lim)[0][0]
+    limit_index = np.where(levels == lambda_lim)[0][0]
     linestyles = [linestyles for i in range(n_levels)]
     linestyles[limit_index] = 'solid'
     linewidths = [linewidths for i in range(n_levels)]
@@ -557,9 +575,8 @@ def plot_lambda_s_mesh(
 
 
 def plot_t_obs_mesh(
-        s_bg,
+        sigma_bg,
         alpha,
-        t_obs,
         a_eff_interpol,
         e_0,
         f_0_mesh,
@@ -567,24 +584,76 @@ def plot_t_obs_mesh(
         n_levels=9,
         linestyles='dashed',
         linewidths=1,
-        colors='k'
+        colors='k',
+        t_obs=None,
         ):
     '''
     This function puts the times until detection into
     a plot in phase space (f_0, Gamma) for given telescope
     analysis parameters
     '''
-    return
+    pixels_per_line = np.shape(f_0_mesh)[0]
+
+    t_obs_s = np.array([[
+        t_obs_li_ma_criterion(
+            # calculate the sigma_s from c(Gamma)*f_0
+            f_0_mesh[i, j] *
+            effective_area_averaged_flux(
+                gamma_mesh[i, j],
+                e_0,
+                a_eff_interpol),
+            sigma_bg,
+            alpha)
+        for j in range(pixels_per_line)] for i in range(pixels_per_line)])
+
+    # if there is no predefined info about t_obs
+    # in prediction mode -> get it from the t_obs mesh
+    print_solid = True
+    if t_obs is None:
+        print_solid = False
+        t_obs = np.median(t_obs_s.flatten())
+
+    levels = np.array([t_obs/((1.5)**(int(n_levels/2)-i))
+                       for i in range(n_levels)])
+    limit_index = np.where(levels == t_obs)[0][0]
+    linestyles = [linestyles for i in range(n_levels)]
+    if print_solid:
+        linestyles[limit_index] = 'solid'
+    linewidths = [linewidths for i in range(n_levels)]
+    if print_solid:
+        linewidths[limit_index] = 2
+
+    cset = plt.contour(
+        f_0_mesh,
+        gamma_mesh,
+        t_obs_s,
+        levels=levels,
+        linestyles=linestyles,
+        linewidths=linewidths,
+        colors=colors
+        )
+
+    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
+
+    plt.title(
+        'time to detection in h, E$_0$={0:1.1f} TeV assuming power law'.
+        format(e_0)
+        )
+    plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
+    plt.ylabel('$\\Gamma$')
+    return t_obs_s
 
 
-def integral_spectral_exclusion_zone(energy, l_lim, a_eff_interpol, t_obs):
+def integral_spectral_exclusion_zone(
+        energy, lambda_lim, a_eff_interpol, t_obs
+        ):
     '''
     This function returns the integral spectral exclusion zone value
-    at one point in energy for given l_lim, a_eff_interpol, and t_obs
+    at one point in energy for given lambda_lim, a_eff_interpol, and t_obs
     '''
     f_0, gamma = integral_spectral_exclusion_zone_parameters(
         energy,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         t_obs)
     return power_law(energy, f_0, gamma)
@@ -592,7 +661,7 @@ def integral_spectral_exclusion_zone(energy, l_lim, a_eff_interpol, t_obs):
 
 def integral_spectral_exclusion_zone_parameters(
         energy,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         t_obs,
         e_0=1.
@@ -604,27 +673,44 @@ def integral_spectral_exclusion_zone_parameters(
     It is done by utilizing the Lagrangian results from the paper.
     '''
     gamma_calc = get_gamma_from_sensitive_energy(energy, a_eff_interpol)
-    f_0_calc = get_ul_f_0(t_obs, l_lim, a_eff_interpol, e_0, gamma_calc)
+    f_0_calc = get_ul_f_0(t_obs, lambda_lim, a_eff_interpol, e_0, gamma_calc)
 
     return f_0_calc, gamma_calc
 
 
-def t_obs(gamma, f_0, s_bg, alpha):
+def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     '''
-    This function calculates the average time to detection,
-    given a power law with the stated parameters, the
-    stated background rate, and alpha
+    This function calculates the limit average time to detection,
+    given a signal rate, background rate, and alpha
     '''
-    return
+    estimated_rate_in_off = sigma_bg / alpha
+    estimated_rate_in_on = sigma_s + sigma_bg
+
+    t_obs_min = 0.
+    t_obs_max = 36e7  # more than 100k h is likely unrealistic
+
+    # catch times will never be measured
+    try:
+        t_obs = brentq(lambda x: (
+            li_ma_significance(
+                estimated_rate_in_on*x,
+                estimated_rate_in_off*x,
+                alpha
+                ) - threshold
+            ), t_obs_min, t_obs_max)
+    except:
+        t_obs = -1.
+
+    return t_obs
 
 
-def sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.):
+def sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.):
     '''
-    This function returns the limit count rate
+    This function returns the limit signal count rate
     using the LiMa criterion
     '''
-    estimated_bg_counts_in_off = s_bg * t_obs / alpha
-    estimated_bg_counts_in_on = s_bg * t_obs
+    estimated_bg_counts_in_off = sigma_bg * t_obs / alpha
+    estimated_bg_counts_in_on = sigma_bg * t_obs
 
     sigma_lim_min = 0.
     sigma_lim_max = 1e3  # more than 1k gamma / s is likely unrealistic
@@ -635,7 +721,7 @@ def sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.):
             li_ma_significance(
                 x*t_obs + estimated_bg_counts_in_on,
                 estimated_bg_counts_in_off,
-                alpha=alpha
+                alpha
                 ) - threshold
             ), sigma_lim_min, sigma_lim_max)
     except:

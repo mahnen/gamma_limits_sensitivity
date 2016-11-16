@@ -34,11 +34,11 @@ def test_get_ul_phasespace_figure():
     Test to check if the above function really returns a matplotlib figure
     '''
     a_eff_list = get_effective_area_list()
-    __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
+    __a, __b, __c, lambda_lim = get_random_on_off_experiment_no_source()
 
     ul_phasespace_figures = [gls.get_ul_phasespace_figure(
         1.*3600.,
-        l_lim,
+        lambda_lim,
         a_eff_interpol,
         pixels_per_line=2
         ) for a_eff_interpol in a_eff_list]
@@ -52,12 +52,12 @@ def test_get_ul_spectrum_figure():
     Test to check if the above function really returns a matplotlib figure
     '''
     a_eff_list = get_effective_area_list()
-    __a, __b, __c, l_lim = get_random_on_off_experiment_no_source()
+    __a, __b, __c, lambda_lim = get_random_on_off_experiment_no_source()
 
     ul_spectrum_figures, energy_xs, dn_de_ys = zip(*(
         gls.get_ul_spectrum_figure(
             1.*3600.,
-            l_lim,
+            lambda_lim,
             a_eff_interpol,
             n_points_to_plot=2) for a_eff_interpol in a_eff_list)
         )

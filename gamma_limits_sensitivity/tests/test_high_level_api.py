@@ -9,7 +9,7 @@ as stated in the README and wants to try it on an upper limit calculation
 
 she calls it as explained:
 
-   gamma_limits_sensitivity ul --n_on=10 --n_off=50 --alpha=0.2 --l_lim=15 --A_eff=<some_path>
+   gamma_limits_sensitivity ul --n_on=10 --n_off=50 --alpha=0.2 --lambda_lim=15 --A_eff=<some_path>
 
 and some nice plots return
 
@@ -20,7 +20,7 @@ her newly developed telescope is actually capable of, independent of the source
 
 So she calls:
 
-    gamma_limits_sensitivity sens --s_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
+    gamma_limits_sensitivity sens --sigma_bg=7.1 --alpha=0.2 --t_obs=36000 --A_eff=<some_path>
 
 and gets plots
 
@@ -32,7 +32,7 @@ reasonable amount of time
 
 so she calls:
 
-    gamma_limits_sensitivity predict --s_bg=7.1 --alpha=0.2 --f_0=1e-12 --df_0=1e-13
+    gamma_limits_sensitivity predict --sigma_bg=7.1 --alpha=0.2 --f_0=1e-12 --df_0=1e-13
         --Gamma=-2.6 --dGamma=0.2 --E_0=1. --A_eff=<some_path>
 
 and gets some plots again and the estimated time to detection printed to stdout.
@@ -55,7 +55,7 @@ def test_high_level_api_ul():
 
     dictionary = gls.upper_limit(
         t_obs=1*3600,
-        l_lim=15.,
+        lambda_lim=15.,
         a_eff=a_eff_path,
         plot_resolution=3
         )
@@ -74,10 +74,11 @@ def test_high_level_api_sens():
     a_eff_path = get_effective_area_paths()[1]
 
     dictionary = gls.sensitivity(
-        s_bg=10,
+        sigma_bg=10,
         alpha=0.2,
         t_obs=10*3600,
         a_eff=a_eff_path,
+        plot_resolution=3
         )
 
     for plot_name in dictionary['plots']:
@@ -95,7 +96,7 @@ def test_high_level_api_predict():
     a_eff_path = get_effective_area_paths()[2]
 
     dictionary = gls.predict(
-        s_bg=10,
+        sigma_bg=10,
         alpha=0.2,
         f_0=1e-12,
         df_0=1e-13,
@@ -103,6 +104,7 @@ def test_high_level_api_predict():
         dgamma=0.2,
         e_0=1.,  # in TeV
         a_eff=a_eff_path,
+        plot_resolution=3
         )
 
     for plot_name in dictionary['plots']:

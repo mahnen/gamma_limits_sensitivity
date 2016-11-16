@@ -40,8 +40,8 @@ def get_random_on_off_experiment_no_source():
     n_off = np.random.poisson(lambda_off)
 
     # rough estimate assuming 3 sigma variance
-    l_lim = n_on-alpha*n_off+3*(np.sqrt(n_on+alpha*alpha*n_off))
-    if l_lim < 10.:
-        l_lim = 10.
+    lambda_lim = n_on-alpha*n_off+3*(np.sqrt(n_on+alpha*alpha*n_off))
+    if lambda_lim < 10.:
+        lambda_lim = 10.
 
-    return n_on, n_off, alpha, l_lim
+    return n_on, n_off, alpha, lambda_lim

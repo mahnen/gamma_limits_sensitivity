@@ -53,7 +53,7 @@ def test_get_ul_f_0():
 
     f_0_calc = gls.get_ul_f_0(
         t_obs=7.*3600.,
-        l_lim=11.3,
+        lambda_lim=11.3,
         a_eff_interpol=a_eff,
         e_0=1.,
         gamma=gamma_test
@@ -96,12 +96,12 @@ def test_integral_spectral_exclusion_zone():
     Test the function for calculating the integral spectral exclusion zone
     '''
     energy_test = 1.2  # TeV
-    l_lim_test = 11.3
+    lambda_lim_test = 11.3
     t_obs_test = 7.*3600.  # in s
     a_eff = get_effective_area_list()[2]  # Veritas V5 lowZd
 
     f_0_result, gamma_result = gls.integral_spectral_exclusion_zone_parameters(
-        energy_test, l_lim_test, a_eff, t_obs_test)
+        energy_test, lambda_lim_test, a_eff, t_obs_test)
 
     # test results
     assert f_0_result > 1e-14
@@ -137,24 +137,38 @@ def test_li_ma_significance():
     assert sigma == result
 
 
-def test_l_lim_li_ma_criterion():
+def test_lambda_lim_li_ma_criterion():
     '''
-    Test the function yielding l_lim as a function of
+    Test the function yielding lambda_lim as a function of
     telescope analysis parameters with respect to the LiMa criterion
     '''
-    s_bg = 2./3600.  # two per h
+    sigma_bg = 2./3600.  # two per h
     t_obs = 3600.  # one h
     alpha = 0.2
-    s_lim = gls.sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.)
-    l_lim = s_lim*t_obs
+    s_lim = gls.sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.)
+    lambda_lim = s_lim*t_obs
     result = 13.486041978777427
 
-    assert np.abs(l_lim-result)/result < 1e-5
+    assert np.abs(lambda_lim-result)/result < 1e-5
 
-    s_bg = 1./3600.  # one per h
+    sigma_bg = 1./3600.  # one per h
     t_obs = 100.  # 100 s
     alpha = 0.2
-    s_lim = gls.sigma_lim_li_ma_criterion(s_bg, alpha, t_obs, threshold=5.)
-    l_lim = s_lim*t_obs
+    s_lim = gls.sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.)
+    lambda_lim = s_lim*t_obs
 
-    assert l_lim == 10.
+    assert lambda_lim == 10.
+
+
+def test_t_obs_li_ma_criterion():
+    '''
+    Test to see if the time to detection is correctly estimated
+    '''
+    sigma_bg = 7./3600.
+    sigma_s = 10./3600.
+    alpha = 0.2
+
+    t_obs_est = gls.t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha)
+    result = 3.142044728972349*3600.
+
+    assert np.abs(t_obs_est-result)/result < 1e-5

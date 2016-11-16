@@ -36,7 +36,17 @@ def test_get_sens_phasespace_figure():
     Test to check if the above function really returns a matplotlib figure
     '''
     a_eff_list = get_effective_area_list()
-    return
+
+    sens_phasespace_figures = [gls.get_sens_phasespace_figure(
+        sigma_bg=10./3600.,
+        alpha=0.2,
+        t_obs=10.*3600,
+        a_eff_interpol=a_eff_interpol,
+        pixels_per_line=2
+        ) for a_eff_interpol in a_eff_list]
+
+    for plot in sens_phasespace_figures:
+        assert isinstance(plot, matplotlib.figure.Figure)
 
 
 def test_get_sens_spectrum_figure():
