@@ -1,4 +1,5 @@
-# gamma_limits_sensitivity [![Build Status](https://travis-ci.org/mahnen/gamma_limits_sensitivity.svg?branch=master)](https://travis-ci.org/mahnen/gamma_limits_sensitivity) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/14c7f1a7c1b941ac87f49f4d3fc880c9/badge.svg)](https://www.quantifiedcode.com/app/project/14c7f1a7c1b941ac87f49f4d3fc880c9)
+# gamma_limits_sensitivity [![Build Status](https://travis-ci.org/mahnen/gamma_limits_sensitivity.svg?branch=master)](https://travis-ci.org/mahnen/gamma_limits_sensitivity) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/14c7f1a7c1b941ac87f49f4d3fc880c9/badge.svg)](https://www.quantifiedcode.com/app/project/14c7f1a7c1b941ac87f49f4d3fc880c9) [![codecov](https://codecov.io/gh/mahnen/gamma_limits_sensitivity/branch/master/graph/badge.svg)](https://codecov.io/gh/mahnen/gamma_limits_sensitivity)
+
 
 This code demonstrates how to calculate integral upper limits and sensitivities for gamma ray telescopes, assuming the underlying unseen source emission behaves as a power law in energy.
 
