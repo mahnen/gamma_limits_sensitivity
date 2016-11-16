@@ -40,18 +40,18 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
     a_eff_figure = get_effective_area_figure(a_eff_interpol)
 
     figures = {
-        'phasespace': phasespace_figure,
-        'spectrum': spectrum_figure,
-        'sensitive_energy': sensitive_energy_figure,
-        'effective_area': a_eff_figure
+        'ul_phasespace': phasespace_figure,
+        'ul_integral_spectral_exclusion_zone': spectrum_figure,
+        'ul_sensitive_energy': sensitive_energy_figure,
+        'ul_effective_area': a_eff_figure
         }
 
     dictionary = {
         'plots': figures,
         'data': {
-            'integral_spectral_exclusion_zone':
+            'ul_integral_spectral_exclusion_zone':
                 np.transpose((energy_x, dn_de_y)),
-            'sensitive_energy':
+            'ul_sensitive_energy':
                 np.transpose((gamma_s, e_sens_s))
             }
         }
@@ -59,7 +59,7 @@ def upper_limit(t_obs, l_lim, a_eff, plot_resolution=30):
     return dictionary
 
 
-def sensitivity(s_bg, alpha, t_obs, a_eff):
+def sensitivity(s_bg, alpha, t_obs, a_eff, plot_resolution=30):
     '''
     This function generates all plots for the command 'sens' from
     input data. It takes:
@@ -71,17 +71,46 @@ def sensitivity(s_bg, alpha, t_obs, a_eff):
 
     It returns a dictionary with results.
     '''
+    a_eff_interpol = get_effective_area(a_eff)
+
+    # make the figures
+    phasespace_figure = get_sens_phasespace_figure(
+        s_bg,
+        alpha,
+        t_obs,
+        a_eff_interpol,
+        pixels_per_line=plot_resolution)
+
+    spectrum_figure, energy_x, dn_de_y = get_sens_spectrum_figure(
+        s_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=plot_resolution)
+
+    sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
+        a_eff_interpol
+        )
+    a_eff_figure = get_effective_area_figure(a_eff_interpol)
+
     figures = {
-        'spectrum': plt.figure()
+        'sens_phasespace': phasespace_figure,
+        'sens_integral_spectral_exclusion_zone': spectrum_figure,
+        'sens_sensitive_energy': sensitive_energy_figure,
+        'sens_effective_area': a_eff_figure
         }
+
     dictionary = {
-        'plots': figures
+        'plots': figures,
+        'data': {
+            'sens_integral_spectral_exclusion_zone':
+                np.transpose((energy_x, dn_de_y)),
+            'sens_sensitive_energy':
+                np.transpose((gamma_s, e_sens_s))
+            }
         }
 
     return dictionary
 
 
-def predict(s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff):
+def predict(
+        s_bg, alpha, f_0, df_0, gamma, dgamma, e_0, a_eff, plot_resolution=30):
     '''
     This function generates all plots for the command 'predict' from
     input data. It takes:
@@ -176,18 +205,6 @@ def get_ul_phasespace_figure(
     return figure
 
 
-def get_sensitive_energy_figure(a_eff_interpol):
-    '''
-    Get a plot showint the sensitive energy
-    given the effective area a_eff_interpol
-    '''
-    figure = plt.figure()
-
-    gammas, e_sens = plot_sensitive_energy(a_eff_interpol)
-
-    return figure, gammas, e_sens
-
-
 def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
     '''
     Get the integral spectral exclusion zone for the 'ul' command
@@ -202,6 +219,41 @@ def get_ul_spectrum_figure(t_obs, l_lim, a_eff_interpol, n_points_to_plot=21):
         )
 
     return figure, energy_x, dn_de_y
+
+
+def get_sens_phasespace_figure(
+        s_bg, alpha, t_obs, a_eff_interpol, e_0=1., pixels_per_line=30):
+    '''
+    This command produces a phasespace figure and fills it with
+    time to detection for given telescope parameters
+    '''
+    figure = plt.figure()
+    return figure
+
+
+def get_sens_spectrum_figure(
+        s_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=21):
+    '''
+    This command produces a spectrum figure and fills it with the
+    integral spectral exclusioin zone for a given observation
+    time and telescope parameters
+    '''
+    figure = plt.figure()
+    energy_x = []
+    dn_de_y = []
+    return figure, energy_x, dn_de_y
+
+
+def get_sensitive_energy_figure(a_eff_interpol):
+    '''
+    Get a plot showint the sensitive energy
+    given the effective area a_eff_interpol
+    '''
+    figure = plt.figure()
+
+    gammas, e_sens = plot_sensitive_energy(a_eff_interpol)
+
+    return figure, gammas, e_sens
 
 
 def get_effective_area_figure(a_eff_interpol):

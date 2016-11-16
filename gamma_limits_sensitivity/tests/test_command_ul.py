@@ -13,6 +13,8 @@ The logic behind the UL calculation is the following:
 
     3.3) the efective area for crosscheck
 
+    3.4) the sensitive energy
+
 4.) return everything to the main
     including a human readable csv file with the
     integral spectral exclusion zone data
