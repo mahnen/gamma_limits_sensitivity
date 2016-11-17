@@ -4,11 +4,10 @@ and time to detections.
 '''
 import matplotlib.pyplot as plt
 from scipy.interpolate import interpolate
-from scipy.optimize import minimize, brentq
+from scipy.optimize import brentq
 from scipy import integrate
 import numpy as np
 import corner
-import os
 
 
 def upper_limit(t_obs, lambda_lim, a_eff, plot_resolution=30):
@@ -270,7 +269,7 @@ def get_ul_phasespace_figure(
     f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
         t_obs, lambda_lim, a_eff_interpol, e_0, pixels_per_line)
 
-    lambda_s_mesh = plot_lambda_s_mesh(
+    plot_lambda_s_mesh(
         t_obs,
         lambda_lim,
         a_eff_interpol,
@@ -314,7 +313,7 @@ def get_sens_phasespace_figure(
     f_0_mesh, gamma_mesh = prepare_phasespace_meshes(
         t_obs, lambda_lim, a_eff_interpol, e_0, pixels_per_line)
 
-    t_obs_mesh = plot_t_obs_mesh(
+    plot_t_obs_mesh(
         sigma_bg,
         alpha,
         a_eff_interpol,
