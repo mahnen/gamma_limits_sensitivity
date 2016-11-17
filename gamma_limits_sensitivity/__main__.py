@@ -65,44 +65,39 @@ def main():
     arguments = docopt(__doc__, version=version)
 
     # run functions according to desired mode: [UL, SENS, PREDICT]
-    try:
-        if arguments['ul']:
-            dictionary = gls.upper_limit(
-                t_obs=float(arguments['--t_obs']),
-                lambda_lim=float(arguments['--l_lim']),
-                a_eff=arguments['--A_eff'],
-            )
-            main_logic(arguments, dictionary)
+    if arguments['ul']:
+        dictionary = gls.upper_limit(
+            t_obs=float(arguments['--t_obs']),
+            lambda_lim=float(arguments['--l_lim']),
+            a_eff=arguments['--A_eff'],
+        )
+        main_logic(arguments, dictionary)
 
-        elif arguments['sens']:
-            dictionary = gls.sensitivity(
-                sigma_bg=float(arguments['--s_bg']),
-                alpha=float(arguments['--alpha']),
-                t_obs=float(arguments['--t_obs']),
-                a_eff=arguments['--A_eff'],
-            )
-            main_logic(arguments, dictionary)
+    elif arguments['sens']:
+        dictionary = gls.sensitivity(
+            sigma_bg=float(arguments['--s_bg']),
+            alpha=float(arguments['--alpha']),
+            t_obs=float(arguments['--t_obs']),
+            a_eff=arguments['--A_eff'],
+        )
+        main_logic(arguments, dictionary)
 
-        elif arguments['predict']:
-            dictionary = gls.predict(
-                sigma_bg=float(arguments['--s_bg']),
-                alpha=float(arguments['--alpha']),
-                f_0=float(arguments['--f_0']),
-                df_0=float(arguments['--df_0']),
-                gamma=float(arguments['--Gamma']),
-                dgamma=float(arguments['--dGamma']),
-                e_0=float(arguments['--E_0']),
-                a_eff=arguments['--A_eff'],
-            )
+    elif arguments['predict']:
+        dictionary = gls.predict(
+            sigma_bg=float(arguments['--s_bg']),
+            alpha=float(arguments['--alpha']),
+            f_0=float(arguments['--f_0']),
+            df_0=float(arguments['--df_0']),
+            gamma=float(arguments['--Gamma']),
+            dgamma=float(arguments['--dGamma']),
+            e_0=float(arguments['--E_0']),
+            a_eff=arguments['--A_eff'],
+        )
+        main_logic(arguments, dictionary)
 
-        else:
-            print(
-                'Unrecognized command option, '
-                'please use one of: [ul, sens, predict]')
-
-    except docopt.DocoptExit as e:
-        print(e)
-
+    else:
+        print('Unrecognized command option, ' +
+              'please use one of: [ul, sens, predict]')
 
 if __name__ == '__main__':
     main()

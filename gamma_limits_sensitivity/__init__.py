@@ -164,9 +164,10 @@ def predict(
         dgamma,
         e_0,
         a_eff_interpol,
-        n_samples=plot_resolution*30)
+        n_samples=plot_resolution*3000
+        )
 
-    t_obs_est = np.array(get_t_obs_est(t_obs_samples))
+    t_obs_est = get_t_obs_est_from_samples(t_obs_samples)
 
     spectrum_figure, energy_x, dn_de_ys = get_predict_spectrum_figure(
         sigma_bg,
@@ -197,7 +198,7 @@ def predict(
         'plots': figures,
         'data': {
             'predict_integral_spectral_exclusion_zone':
-                np.transpose((energy_x, dn_de_ys)),
+                np.vstack((energy_x, dn_de_ys)).T,
             'predict_sensitive_energy':
                 np.transpose((gamma_s, e_sens_s)),
             'predict_t_obs_est':
@@ -412,8 +413,8 @@ def get_predict_spectrum_figure(
     and double that time.
     '''
     spectrum_figure = plt.figure()
-    energy_x = [0.]
-    dn_de_ys = [[0., 0.], [0., 0.], [0., 0.]]
+    energy_x = np.array([0., 0.])
+    dn_de_ys = np.array([[1., 1.], [2., 2.], [3., 3.]])
     return spectrum_figure, energy_x, dn_de_ys
 
 
@@ -422,7 +423,7 @@ def plot_predict_contours_from_phasespace_parameters(
         df_0,
         gamma,
         dgamma,
-        n_samples=1000
+        n_samples=100000
         ):
     '''
     This function draws contours from phase space parameters
@@ -432,7 +433,7 @@ def plot_predict_contours_from_phasespace_parameters(
         df_0,
         gamma,
         dgamma,
-        n_samples=1000
+        n_samples=n_samples
         )
     plot_contours_from_sample(random_data)
 
@@ -442,7 +443,7 @@ def get_phasespace_samples(
         df_0,
         gamma,
         dgamma,
-        n_samples=10000,
+        n_samples,
         ):
     '''
     Function to return a sample from the phase space according to
@@ -479,16 +480,37 @@ def get_t_obs_samples(
         dgamma,
         e_0,
         a_eff_interpol,
-        n_samples=1000,
+        n_samples=100000,
+        thinning=1./400.
         ):
     '''
     Function to calculate samples of the time to detection
     '''
-    t_obs_samples = [0., 0., 0.]
+    phasespace_samples = get_phasespace_samples(
+            f_0,
+            df_0,
+            gamma,
+            dgamma,
+            n_samples
+            )
+
+    t_obs_samples = np.array([
+        t_obs_li_ma_criterion(
+            point[0] * effective_area_averaged_flux(
+                point[1],
+                e_0,
+                a_eff_interpol
+            ),
+            sigma_bg,
+            alpha)
+        for point
+        in phasespace_samples[:(int(n_samples*thinning)+1)]
+        ])
+
     return t_obs_samples
 
 
-def get_t_obs_est(
+def get_t_obs_est_from_samples(
         t_obs_samples,
         lower_percentile=16.,
         upper_percentile=84.
@@ -698,7 +720,7 @@ def plot_sensitive_energy(a_eff_interpol):
 
     plt.title('sensitive energy E$_{sens}$($\\Gamma$)')
     plt.semilogy()
-    plt.ylabel('E$_{sens}$ / GeV')
+    plt.ylabel('E$_{sens}$ / TeV')
     plt.xlabel('$\\Gamma$')
 
     return gammas, e_sens
@@ -960,17 +982,13 @@ def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     t_obs_min = 0.
     t_obs_max = 36e7  # more than 100k h is likely unrealistic
 
-    # catch times will never be measured
-    try:
-        t_obs = brentq(lambda x: (
-            li_ma_significance(
-                estimated_rate_in_on*x,
-                estimated_rate_in_off*x,
-                alpha
-                ) - threshold
-            ), t_obs_min, t_obs_max)
-    except:
-        t_obs = -1.
+    t_obs = brentq(lambda x: (
+        li_ma_significance(
+            estimated_rate_in_on*x,
+            estimated_rate_in_off*x,
+            alpha
+            ) - threshold
+        ), t_obs_min, t_obs_max)
 
     return t_obs
 

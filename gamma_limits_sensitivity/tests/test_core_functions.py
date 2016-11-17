@@ -196,10 +196,10 @@ def test_get_t_obs_samples():
         )
 
     for t_obs_est in t_obs_samples:
-        assert t_obs_est >= 0.
+        assert t_obs_est > 0.
 
 
-def test_get_t_obs_est():
+def test_get_t_obs_est_from_samples():
     '''
     Test if tis function returns a sensible confidence interval
     and a sensible median
@@ -208,7 +208,7 @@ def test_get_t_obs_est():
     t_max_in_h = 50
     t_obs_samples = np.random.random(n_samples)*t_max_in_h*3600
 
-    t_obs_est = gls.get_t_obs_est(
+    t_obs_est = gls.get_t_obs_est_from_samples(
         t_obs_samples
         )
 
