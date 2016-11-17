@@ -57,7 +57,7 @@ __How it also works__
 
 In case you want to use gamma_limits_sensitivity in your own python analysis, you can import it and use the member functions directly. The API is the same as for the command line interface:
 
-```
+```python
 import gamma_limits_sensitivity as gls
 
 a_eff_file = 'gamma_limits_sensitivity/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
