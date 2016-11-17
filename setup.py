@@ -21,7 +21,8 @@ setup(
         'numpy',
         'scipy',
         'matplotlib',
-        'docopt'
+        'docopt',
+        'corner'
     },
     tests_require=['pytest']
 )

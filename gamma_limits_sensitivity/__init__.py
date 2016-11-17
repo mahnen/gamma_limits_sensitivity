@@ -7,6 +7,7 @@ from scipy.interpolate import interpolate
 from scipy.optimize import minimize, brentq
 from scipy import integrate
 import numpy as np
+import corner
 import os
 
 
@@ -353,9 +354,38 @@ def get_predict_phasespace_figure(
         pixels_per_line=30
         ):
     '''
-    Description ... [TODO]
+    This function creates a figure and fills it with
+    relevant phase space functions, such as 2D confidence
+    intervals representing the source emission and
+    time to detection
     '''
-    phasespace_figure = plt.figure()
+    # first calculate the time to detection
+    # assuming for the mode of the emission parameters
+    t_obs = t_obs_li_ma_criterion(
+        f_0 * effective_area_averaged_flux(
+            gamma,
+            e_0,
+            a_eff_interpol
+            ),
+        sigma_bg,
+        alpha,
+        )
+
+    phasespace_figure = get_sens_phasespace_figure(
+        sigma_bg,
+        alpha,
+        t_obs,
+        a_eff_interpol,
+        e_0=e_0,
+        pixels_per_line=pixels_per_line)
+
+    plot_predict_contours_from_phasespace_parameters(
+        f_0,
+        df_0,
+        gamma,
+        dgamma
+        )
+
     return phasespace_figure
 
 
@@ -385,6 +415,32 @@ def get_predict_spectrum_figure(
     energy_x = [0.]
     dn_de_ys = [[0., 0.], [0., 0.], [0., 0.]]
     return spectrum_figure, energy_x, dn_de_ys
+
+
+def plot_predict_contours_from_phasespace_parameters(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples=1000
+        ):
+    '''
+    This function draws contours from phase space parameters
+    assuming there can only be:
+        f_0 > 0
+        gamma < 0
+    '''
+    mean = [f_0*1e12, gamma]  # scale f_0, later downscale again
+    # diagonal covariance
+    cov = [[df_0*1e12*df_0*1e12, 0.], [0., dgamma*dgamma]]
+    random_data = np.random.multivariate_normal(mean, cov, n_samples)
+    random_data[:, 0] = random_data[:, 0]/1e12
+
+    # truncate to physical values
+    random_data = random_data[random_data[:, 0] > 0]  # f_0
+    random_data = random_data[random_data[:, 1] < 0]  # gamma
+
+    plot_contours_from_sample(random_data)
 
 
 def get_t_obs_samples(
@@ -797,6 +853,39 @@ def plot_t_obs_mesh(
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
     plt.ylabel('$\\Gamma$')
     return t_obs_s
+
+
+def plot_contours_from_sample(
+        samples,
+        levels=None,
+        smooth=False
+        ):
+    '''
+    This function draws a contour plot into the current
+    figure showing selected highest density 2D confidence intervals
+    The standard is: 1 sigma, 2 sigma, 3 sigma in 2D
+    '''
+
+    # one, two, and three sigma in 2D
+    if levels is None:
+        levels = 1 - np.exp(-0.5*(np.arange(1, 3.1, 1)**2))
+
+    axis = plt.gca()
+    x_lim = axis.get_xlim()
+    y_lim = axis.get_ylim()
+
+    corner.hist2d(
+        samples[:, 0],
+        samples[:, 1],
+        plot_datapoints=False,
+        plot_density=False,
+        no_fill_contours=True,
+        ax=axis,
+        smooth=smooth,
+        levels=levels)
+
+    axis.set_xlim(x_lim)
+    axis.set_ylim(y_lim)
 
 
 def integral_spectral_exclusion_zone(
