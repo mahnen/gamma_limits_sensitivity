@@ -172,3 +172,44 @@ def test_t_obs_li_ma_criterion():
     result = 3.142044728972349*3600.
 
     assert np.abs(t_obs_est-result)/result < 1e-5
+
+
+def test_get_t_obs_samples():
+    '''
+    Test if this function retruns a sensible array of t_obs_est
+    '''
+    a_eff_list = get_effective_area_list()
+    chosen_index = 2
+    a_eff = a_eff_list[chosen_index]
+
+    t_obs_samples = gls.get_t_obs_samples(
+        sigma_bg=7./3600.,
+        alpha=0.2,
+        f_0=1e-12,
+        df_0=1e-13,
+        gamma=-2.6,
+        dgamma=0.1,
+        e_0=1.,
+        a_eff_interpol=a_eff,
+        n_samples=5,
+        )
+
+    for t_obs_est in t_obs_samples:
+        assert t_obs_est >= 0.
+
+
+def test_get_t_obs_est():
+    '''
+    Test if tis function returns a sensible confidence interval
+    and a sensible median
+    '''
+    n_samples = 100
+    t_max_in_h = 50
+    t_obs_samples = np.random.random(n_samples)*t_max_in_h*3600
+
+    t_obs_est = gls.get_t_obs_est(
+        t_obs_samples
+        )
+
+    for percentile in t_obs_est:
+        assert percentile >= 0.

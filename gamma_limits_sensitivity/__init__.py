@@ -143,7 +143,7 @@ def predict(
     a_eff_interpol = get_effective_area(a_eff)
 
     # make the figures
-    phasespace_figure, t_obs_est = get_predict_phasespace_figure(
+    phasespace_figure = get_predict_phasespace_figure(
         sigma_bg,
         alpha,
         f_0,
@@ -153,6 +153,19 @@ def predict(
         e_0,
         a_eff_interpol,
         pixels_per_line=plot_resolution)
+
+    t_obs_samples = get_t_obs_samples(
+        sigma_bg,
+        alpha,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        n_samples=plot_resolution*30)
+
+    t_obs_est = np.array(get_t_obs_est(t_obs_samples))
 
     spectrum_figure, energy_x, dn_de_ys = get_predict_spectrum_figure(
         sigma_bg,
@@ -173,19 +186,21 @@ def predict(
     a_eff_figure = get_effective_area_figure(a_eff_interpol)
 
     figures = {
-        # 'sens_phasespace': phasespace_figure,
-        # 'sens_integral_spectral_exclusion_zone': spectrum_figure,
-        'sens_sensitive_energy': sensitive_energy_figure,
-        'sens_effective_area': a_eff_figure
+        'predict_phasespace': phasespace_figure,
+        'predict_integral_spectral_exclusion_zone': spectrum_figure,
+        'predict_sensitive_energy': sensitive_energy_figure,
+        'predict_effective_area': a_eff_figure
         }
 
     dictionary = {
         'plots': figures,
         'data': {
-            # 'sens_integral_spectral_exclusion_zone':
-            #    np.transpose((energy_x, dn_de_y)),
-            'sens_sensitive_energy':
-                np.transpose((gamma_s, e_sens_s))
+            'predict_integral_spectral_exclusion_zone':
+                np.transpose((energy_x, dn_de_ys)),
+            'predict_sensitive_energy':
+                np.transpose((gamma_s, e_sens_s)),
+            'predict_t_obs_est':
+                np.transpose(t_obs_est)
             }
         }
 
@@ -341,8 +356,7 @@ def get_predict_phasespace_figure(
     Description ... [TODO]
     '''
     phasespace_figure = plt.figure()
-    t_obs_est = [0., 0., 0.]
-    return phasespace_figure, t_obs_est
+    return phasespace_figure
 
 
 def get_predict_spectrum_figure(
@@ -371,6 +385,41 @@ def get_predict_spectrum_figure(
     energy_x = [0.]
     dn_de_ys = [[0., 0.], [0., 0.], [0., 0.]]
     return spectrum_figure, energy_x, dn_de_ys
+
+
+def get_t_obs_samples(
+        sigma_bg,
+        alpha,
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        e_0,
+        a_eff_interpol,
+        n_samples=1000,
+        ):
+    '''
+    Function to calculate samples of the time to detection
+    '''
+    t_obs_samples = [0., 0., 0.]
+    return t_obs_samples
+
+
+def get_t_obs_est(
+        t_obs_samples,
+        lower_percentile=16.,
+        upper_percentile=84.
+        ):
+    '''
+    Function to calculate the asymmetrical 68% CI
+    from a sample of times to detection
+    '''
+    t_obs_est = np.array([
+        np.percentile(t_obs_samples, lower_percentile),
+        np.percentile(t_obs_samples, 50.),
+        np.percentile(t_obs_samples, upper_percentile),
+        ])
+    return t_obs_est
 
 
 def get_sensitive_energy_figure(a_eff_interpol):
