@@ -67,3 +67,5 @@ result_dict = gls.upper_limit(lambda_lim=l_lim, t_obs=t_obs, a_eff=a_eff_file)
 
 result_dict['plots']['ul_sensitive_energy'].show()
 ```
+In this case, the resulting plot shown is:
+![img](gamma_limits_sensitivity/resources/figure_3.png)
