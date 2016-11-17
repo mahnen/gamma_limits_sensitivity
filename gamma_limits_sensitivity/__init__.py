@@ -413,8 +413,47 @@ def get_predict_spectrum_figure(
     and double that time.
     '''
     spectrum_figure = plt.figure()
-    energy_x = np.array([0., 0.])
-    dn_de_ys = np.array([[1., 1.], [2., 2.], [3., 3.]])
+
+    n_samples = 100
+    energy_range = get_energy_range(a_eff_interpol)
+    phasespace_samples = get_phasespace_samples(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples
+    )
+    plot_source_emission_spectrum_with_uncertainties(
+        phasespace_samples,
+        e_0,
+        energy_range
+    )
+
+    energy_x, dn_de_y0 = plot_sens_spectrum_figure(
+        sigma_bg, alpha, t_obs_est[0], a_eff_interpol, n_points_to_plot, 'k:'
+        )
+    __a, dn_de_y1 = plot_sens_spectrum_figure(
+        sigma_bg, alpha, t_obs_est[1], a_eff_interpol, n_points_to_plot, 'k'
+        )
+    __a, dn_de_y2 = plot_sens_spectrum_figure(
+        sigma_bg, alpha, t_obs_est[2], a_eff_interpol, n_points_to_plot, 'k:'
+        )
+
+    # correct the title time to detection
+    median_string_num = '{0:3.3f}'.format(t_obs_est[1]/3600.)
+    plus_string_num = '{0:3.3f}'.format((t_obs_est[2]-t_obs_est[1])/3600.)
+    minus_string_num = '{0:3.3f}'.format((t_obs_est[1]-t_obs_est[0])/3600.)
+
+    plusminus_string = (r't$_{est}$ = (' +
+                        median_string_num +
+                        ' +' +
+                        plus_string_num +
+                        ' -' +
+                        minus_string_num +
+                        ') h')
+
+    plt.title('Int. Sp. Excl. Zone, ' + plusminus_string)
+    dn_de_ys = np.array([dn_de_y0, dn_de_y1, dn_de_y2])
     return spectrum_figure, energy_x, dn_de_ys
 
 
@@ -727,19 +766,19 @@ def plot_sensitive_energy(a_eff_interpol):
 
 
 def plot_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot
+        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot, fmt='k'
         ):
     '''
     fill a ul spectrum figure with the integral spectral exclusion zone plot
     '''
     gamma_range = [-6, -0.2]
 
-    energy_limits = [
+    energy_range = [
         sensitive_energy(gamma_range[0], a_eff_interpol),
         sensitive_energy(gamma_range[1], a_eff_interpol)]
     energy_x = 10**np.linspace(
-            np.log10(energy_limits[0]),
-            np.log10(energy_limits[1]),
+            np.log10(energy_range[0]),
+            np.log10(energy_range[1]),
             n_points_to_plot
         )
     dn_de_y = [integral_spectral_exclusion_zone(
@@ -752,9 +791,9 @@ def plot_ul_spectrum_figure(
                ]
     dn_de_y = np.array(dn_de_y)
 
-    plt.plot(energy_x, dn_de_y, 'k')
+    plt.plot(energy_x, dn_de_y, fmt)
     plt.loglog()
-    plt.title('Integral Spectral Exclusion Zone, t$_{obs}$' +
+    plt.title('Integral Spectral Exclusion Zone, t' +
               ('={0:1.1f} h'.format(t_obs/3600.)))
     plt.xlabel('E / TeV')
     plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
@@ -763,7 +802,7 @@ def plot_ul_spectrum_figure(
 
 
 def plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot
+        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot, fmt='k'
         ):
     '''
     fill a spectrum figure with the sensitivity
@@ -773,7 +812,8 @@ def plot_sens_spectrum_figure(
         t_obs,
         sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs)*t_obs,
         a_eff_interpol,
-        n_points_to_plot)
+        n_points_to_plot,
+        fmt=fmt)
 
     return energy_x, dn_de_y
 
@@ -941,26 +981,65 @@ def plot_power_law(
         f_0,
         gamma,
         e_0,
-        energy_limits,
+        energy_range,
         fmt='k:',
         label='',
-        transparency=0.7
+        alpha_plot=0.7
         ):
     '''
     This function generates a power law plot in
     the current figure
     '''
     e_x = 10**np.arange(
-        np.log10(energy_limits[0]),
-        np.log10(energy_limits[1])+0.05,
+        np.log10(energy_range[0]),
+        np.log10(energy_range[1])+0.05,
         0.05)
     e_y = power_law(e_x, f_0, gamma, e_0=e_0)
 
-    plt.plot(e_x, e_y, fmt, label=label, alpha=transparency)
+    plt.plot(e_x, e_y, fmt, label=label, alpha=alpha_plot)
     plt.loglog()
 
     plt.xlabel("E / TeV")
     plt.ylabel("dN/dE / [(cm$^2$ s TeV)$^{-1}$]")
+
+
+def plot_source_emission_spectrum_with_uncertainties(
+        phasespace_samples,
+        e_0,
+        energy_range,
+        label=''
+        ):
+    '''
+    This function draws 100 power laws as an illustration for
+    the source emission uncertainty
+    '''
+    f0_mc, gamma_mc = zip(*np.percentile(
+        phasespace_samples,
+        [16, 50, 84],
+        axis=0)
+    )
+
+    for f_0, gamma in phasespace_samples[
+            np.random.randint(len(phasespace_samples), size=100)
+            ]:
+        plot_power_law(
+            f_0,
+            gamma,
+            e_0=e_0,
+            energy_range=energy_range,
+            fmt='k',
+            alpha_plot=0.03
+            )
+
+    plot_power_law(
+        f0_mc[1],
+        gamma_mc[1],
+        e_0=e_0,
+        energy_range=energy_range,
+        fmt='r',
+        label=label,
+        alpha_plot=0.8
+        )
 
 
 def integral_spectral_exclusion_zone(

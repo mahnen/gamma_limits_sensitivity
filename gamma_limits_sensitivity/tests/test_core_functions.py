@@ -266,9 +266,38 @@ def test_plot_power_law():
     f_0 = 1e-11
     gamma = -2.6
     e_0 = 1.
-    energy_limits = [0.1, 10]
+    energy_range = [0.1, 10]
 
     figure = plt.figure()
-    gls.plot_power_law(f_0, gamma, e_0, energy_limits)
+    gls.plot_power_law(f_0, gamma, e_0, energy_range)
+
+    assert isinstance(figure, matplotlib.figure.Figure)
+
+
+def test_plot_source_emission_spectrum_with_uncertainties():
+    '''
+    Test if the plot with the many power laws is produced
+    '''
+    n_samples = 10000
+    f_0 = 1e-12
+    df_0 = 1e-13
+    gamma = -2.6
+    dgamma = 0.2
+    e_0 = 1.
+    energy_range = [0.1, 10.]
+
+    phasespace_samples = gls.get_phasespace_samples(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples
+        )
+
+    figure = plt.figure()
+    gls.plot_source_emission_spectrum_with_uncertainties(
+        phasespace_samples,
+        e_0,
+        energy_range)
 
     assert isinstance(figure, matplotlib.figure.Figure)
