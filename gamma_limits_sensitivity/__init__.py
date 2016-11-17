@@ -1008,13 +1008,19 @@ def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     t_obs_min = 0.
     t_obs_max = 36e7  # more than 100k h is likely unrealistic
 
-    t_obs = brentq(lambda x: (
-        li_ma_significance(
-            estimated_rate_in_on*x,
-            estimated_rate_in_off*x,
-            alpha
-            ) - threshold
-        ), t_obs_min, t_obs_max)
+    try:
+        t_obs = brentq(lambda x: (
+            li_ma_significance(
+                estimated_rate_in_on*x,
+                estimated_rate_in_off*x,
+                alpha
+                ) - threshold
+            ), t_obs_min, t_obs_max)
+    except ValueError:
+        raise ValueError('The time to detection could not be calculated. '
+                         'This can be the case when sigma_bg is overestimated.'
+                         ' Please check that your stated background rate'
+                         ' is actually given as: sigma_bg / s')
 
     return t_obs
 
