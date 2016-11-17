@@ -426,6 +426,27 @@ def plot_predict_contours_from_phasespace_parameters(
         ):
     '''
     This function draws contours from phase space parameters
+    '''
+    random_data = get_phasespace_samples(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples=1000
+        )
+    plot_contours_from_sample(random_data)
+
+
+def get_phasespace_samples(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples=10000,
+        ):
+    '''
+    Function to return a sample from the phase space according to
+    the given parameters and parameter uncertainties
     assuming there can only be:
         f_0 > 0
         gamma < 0
@@ -433,14 +454,20 @@ def plot_predict_contours_from_phasespace_parameters(
     mean = [f_0*1e12, gamma]  # scale f_0, later downscale again
     # diagonal covariance
     cov = [[df_0*1e12*df_0*1e12, 0.], [0., dgamma*dgamma]]
-    random_data = np.random.multivariate_normal(mean, cov, n_samples)
+    random_data = np.random.multivariate_normal(mean, cov, n_samples*2)
     random_data[:, 0] = random_data[:, 0]/1e12
 
     # truncate to physical values
     random_data = random_data[random_data[:, 0] > 0]  # f_0
     random_data = random_data[random_data[:, 1] < 0]  # gamma
 
-    plot_contours_from_sample(random_data)
+    if len(random_data) < n_samples:
+        raise IndexError(
+              'less than 50 percent of the sample from the highest density' +
+              'confidence interval in the physical region f_0>0 && Gamma<0' +
+              '-> time to detection is uncertain/ source may be undetectable')
+
+    return random_data[:n_samples]
 
 
 def get_t_obs_samples(

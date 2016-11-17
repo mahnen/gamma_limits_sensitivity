@@ -5,6 +5,7 @@ core functions
 import gamma_limits_sensitivity as gls
 import numpy as np
 from scipy import integrate
+import pytest
 
 from helper_functions_for_tests import get_effective_area_list
 
@@ -213,3 +214,44 @@ def test_get_t_obs_est():
 
     for percentile in t_obs_est:
         assert percentile >= 0.
+
+
+def test_get_phasespace_samples():
+    '''
+    This test checks if the phasespace samples are OK
+    '''
+    n_samples = 100
+    f_0 = 1e-12
+    df_0 = 1e-13
+    gamma = -2.6
+    dgamma = 0.2
+
+    phasespace_samples = gls.get_phasespace_samples(
+        f_0,
+        df_0,
+        gamma,
+        dgamma,
+        n_samples
+        )
+
+    for sample in phasespace_samples:
+        assert sample[0] >= 0.
+        assert sample[1] <= 0.
+
+    # check that an exception is thrown when
+    # the errors become too large compared to the
+    # parameters -> t_obs_est uncertain / source unobservable
+    n_samples = 1000000
+    f_0 = 1e-12
+    df_0 = 0.5e-11
+    gamma = -0.1
+    dgamma = 5.2
+
+    with pytest.raises(IndexError):
+        phasespace_samples = gls.get_phasespace_samples(
+            f_0,
+            df_0,
+            gamma,
+            dgamma,
+            n_samples
+            )
