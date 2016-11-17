@@ -74,7 +74,7 @@ def test_high_level_api_sens():
     a_eff_path = get_effective_area_paths()[1]
 
     dictionary = gls.sensitivity(
-        sigma_bg=10,
+        sigma_bg=10/3600.,
         alpha=0.2,
         t_obs=10*3600,
         a_eff=a_eff_path,
@@ -96,7 +96,7 @@ def test_high_level_api_predict():
     a_eff_path = get_effective_area_paths()[2]
 
     dictionary = gls.predict(
-        sigma_bg=10,
+        sigma_bg=10./3600.,
         alpha=0.2,
         f_0=1e-12,
         df_0=1e-13,

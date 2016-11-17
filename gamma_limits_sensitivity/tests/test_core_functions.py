@@ -3,10 +3,12 @@ This is a set of test in order to check the
 core functions
 '''
 import gamma_limits_sensitivity as gls
+import matplotlib.pyplot as plt
 import numpy as np
-from scipy import integrate
+import matplotlib
 import pytest
 
+from scipy import integrate
 from helper_functions_for_tests import get_effective_area_list
 
 
@@ -255,3 +257,18 @@ def test_get_phasespace_samples():
             dgamma,
             n_samples
             )
+
+
+def test_plot_power_law():
+    '''
+    Test if the power law plot is generated
+    '''
+    f_0 = 1e-11
+    gamma = -2.6
+    e_0 = 1.
+    energy_limits = [0.1, 10]
+
+    figure = plt.figure()
+    gls.plot_power_law(f_0, gamma, e_0, energy_limits)
+
+    assert isinstance(figure, matplotlib.figure.Figure)

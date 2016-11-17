@@ -937,6 +937,32 @@ def plot_contours_from_sample(
     axis.set_ylim(y_lim)
 
 
+def plot_power_law(
+        f_0,
+        gamma,
+        e_0,
+        energy_limits,
+        fmt='k:',
+        label='',
+        transparency=0.7
+        ):
+    '''
+    This function generates a power law plot in
+    the current figure
+    '''
+    e_x = 10**np.arange(
+        np.log10(energy_limits[0]),
+        np.log10(energy_limits[1])+0.05,
+        0.05)
+    e_y = power_law(e_x, f_0, gamma, e_0=e_0)
+
+    plt.plot(e_x, e_y, fmt, label=label, alpha=transparency)
+    plt.loglog()
+
+    plt.xlabel("E / TeV")
+    plt.ylabel("dN/dE / [(cm$^2$ s TeV)$^{-1}$]")
+
+
 def integral_spectral_exclusion_zone(
         energy, lambda_lim, a_eff_interpol, t_obs
         ):
