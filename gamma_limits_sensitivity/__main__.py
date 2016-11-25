@@ -2,8 +2,8 @@
 This is the main of the ul method paper demonstration
 
 Usage:
-  gamma_limits_sensitivity ul --l_lim=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
-  gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--out=<path>]
+  gamma_limits_sensitivity ul --l_lim=<arg> --t_obs=<arg> --A_eff=<file> [--E_0=<arg>] [--out=<path>]
+  gamma_limits_sensitivity sens --s_bg=<arg> --alpha=<arg> --t_obs=<arg> --A_eff=<file> [--E_0=<arg>] [--out=<path>]
   gamma_limits_sensitivity predict --s_bg=<arg> --alpha=<arg> --f_0=<arg> --df_0=<arg> --Gamma=<arg> --dGamma=<arg> --E_0=<arg> --A_eff=<file> [--out=<path>]
   gamma_limits_sensitivity (-h | --help)
   gamma_limits_sensitivity --version
@@ -64,12 +64,19 @@ def main():
     version = pkg_resources.require("gamma_limits_sensitivity")[0].version
     arguments = docopt(__doc__, version=version)
 
+    # ensure e_0 is defined
+    if arguments['--E_0'] is None:
+        arguments['--E_0'] = gls.get_useful_e_0(
+            gls.get_effective_area(arguments['--A_eff'])
+            )
+
     # run functions according to desired mode: [UL, SENS, PREDICT]
     if arguments['ul']:
         dictionary = gls.upper_limit(
             t_obs=float(arguments['--t_obs']),
             lambda_lim=float(arguments['--l_lim']),
             a_eff=arguments['--A_eff'],
+            e_0=float(arguments['--E_0'])
         )
         main_logic(arguments, dictionary)
 
@@ -79,6 +86,7 @@ def main():
             alpha=float(arguments['--alpha']),
             t_obs=float(arguments['--t_obs']),
             a_eff=arguments['--A_eff'],
+            e_0=float(arguments['--E_0'])
         )
         main_logic(arguments, dictionary)
 

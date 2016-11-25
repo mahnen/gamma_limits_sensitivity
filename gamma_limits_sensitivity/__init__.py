@@ -10,7 +10,7 @@ import numpy as np
 import corner
 
 
-def upper_limit(t_obs, lambda_lim, a_eff, plot_resolution=30):
+def upper_limit(t_obs, lambda_lim, a_eff, e_0, plot_resolution=30):
     '''
     This function generates all plots for the command 'ul' from
     input data. It takes:
@@ -29,10 +29,15 @@ def upper_limit(t_obs, lambda_lim, a_eff, plot_resolution=30):
         t_obs,
         lambda_lim,
         a_eff_interpol,
+        e_0,
         pixels_per_line=plot_resolution)
 
     spectrum_figure, energy_x, dn_de_y = get_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot=plot_resolution)
+        t_obs,
+        lambda_lim,
+        a_eff_interpol,
+        e_0,
+        n_points_to_plot=plot_resolution)
 
     sensitive_energy_figure, gamma_s, e_sens_s = get_sensitive_energy_figure(
         a_eff_interpol
@@ -59,7 +64,7 @@ def upper_limit(t_obs, lambda_lim, a_eff, plot_resolution=30):
     return dictionary
 
 
-def sensitivity(sigma_bg, alpha, t_obs, a_eff, plot_resolution=30):
+def sensitivity(sigma_bg, alpha, t_obs, a_eff, e_0, plot_resolution=30):
     '''
     This function generates all plots for the command 'sens' from
     input data. It takes:
@@ -86,6 +91,7 @@ def sensitivity(sigma_bg, alpha, t_obs, a_eff, plot_resolution=30):
         alpha,
         t_obs,
         a_eff_interpol,
+        e_0,
         n_points_to_plot=plot_resolution
         )
 
@@ -282,7 +288,7 @@ def get_ul_phasespace_figure(
 
 
 def get_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot=21
+        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot=21
         ):
     '''
     Get the integral spectral exclusion zone for the 'ul' command
@@ -293,6 +299,7 @@ def get_ul_spectrum_figure(
         t_obs,
         lambda_lim,
         a_eff_interpol,
+        e_0,
         n_points_to_plot
         )
 
@@ -327,7 +334,7 @@ def get_sens_phasespace_figure(
 
 
 def get_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot=21):
+        sigma_bg, alpha, t_obs, a_eff_interpol, e_0, n_points_to_plot=21):
     '''
     This command produces a spectrum figure and fills it with the
     integral spectral exclusion zone for a given observation
@@ -336,7 +343,7 @@ def get_sens_spectrum_figure(
     figure = plt.figure()
 
     energy_x, dn_de_y = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot
+        sigma_bg, alpha, t_obs, a_eff_interpol, e_0, n_points_to_plot
         )
 
     return figure, energy_x, dn_de_y
@@ -429,13 +436,13 @@ def get_predict_spectrum_figure(
     )
 
     energy_x, dn_de_y0 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[0], a_eff_interpol, n_points_to_plot, 'k:'
+        sigma_bg, alpha, t_obs_est[0], a_eff_interpol, n_points_to_plot, e_0, 'k:'
         )
     __a, dn_de_y1 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[1], a_eff_interpol, n_points_to_plot, 'k'
+        sigma_bg, alpha, t_obs_est[1], a_eff_interpol, n_points_to_plot, e_0, 'k'
         )
     __a, dn_de_y2 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[2], a_eff_interpol, n_points_to_plot, 'k:'
+        sigma_bg, alpha, t_obs_est[2], a_eff_interpol, n_points_to_plot, e_0, 'k:'
         )
 
     # correct the title time to detection
@@ -699,7 +706,7 @@ def effective_area_averaged_flux(gamma, e_0, a_eff_interpol):
         integrand,
         energy_range[0],
         energy_range[1],
-        limit=1000,
+        limit=10000,
         full_output=1)[0]
 
 
@@ -721,7 +728,7 @@ def ln_energy_weighted(gamma, a_eff_interpol):
         integrand,
         energy_range[0],
         energy_range[1],
-        limit=1000,
+        limit=10000,
         full_output=1
         )[0]
 
@@ -739,14 +746,14 @@ def mean_log10_energy(a_eff_interpol):
         integrand_numerator,
         energy_range[0],
         energy_range[1],
-        limit=1000,
+        limit=10000,
         full_output=1
         )[0]
     denominator = integrate.quad(
         integrand_denominator,
         energy_range[0],
         energy_range[1],
-        limit=1000,
+        limit=10000,
         full_output=1
         )[0]
 
@@ -788,7 +795,7 @@ def plot_sensitive_energy(a_eff_interpol):
     '''
     fill a sensitive energy plot figure
     '''
-    gamma_range = [-6., -0.5]
+    gamma_range = [-5., -0.5]
     stepsize = 0.1
     gammas = np.arange(gamma_range[0], gamma_range[1]+stepsize, stepsize)
     e_sens = np.array([sensitive_energy(i, a_eff_interpol) for i in gammas])
@@ -804,12 +811,12 @@ def plot_sensitive_energy(a_eff_interpol):
 
 
 def plot_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, n_points_to_plot, fmt='k'
+        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot, fmt='k'
         ):
     '''
     fill a ul spectrum figure with the integral spectral exclusion zone plot
     '''
-    gamma_range = [-6, -0.2]
+    gamma_range = [-5, -0.5]
 
     energy_range = [
         sensitive_energy(gamma_range[0], a_eff_interpol),
@@ -823,7 +830,9 @@ def plot_ul_spectrum_figure(
                 energy,
                 lambda_lim,
                 a_eff_interpol,
-                t_obs)
+                t_obs,
+                e_0
+                )
                for energy
                in energy_x
                ]
@@ -840,7 +849,7 @@ def plot_ul_spectrum_figure(
 
 
 def plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs, a_eff_interpol, n_points_to_plot, fmt='k'
+        sigma_bg, alpha, t_obs, a_eff_interpol, e_0, n_points_to_plot, fmt='k'
         ):
     '''
     fill a spectrum figure with the sensitivity
@@ -850,6 +859,7 @@ def plot_sens_spectrum_figure(
         t_obs,
         sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs)*t_obs,
         a_eff_interpol,
+        e_0,
         n_points_to_plot,
         fmt=fmt)
 
@@ -1081,7 +1091,7 @@ def plot_source_emission_spectrum_with_uncertainties(
 
 
 def integral_spectral_exclusion_zone(
-        energy, lambda_lim, a_eff_interpol, t_obs
+        energy, lambda_lim, a_eff_interpol, t_obs, e_0
         ):
     '''
     This function returns the integral spectral exclusion zone value
@@ -1091,8 +1101,10 @@ def integral_spectral_exclusion_zone(
         energy,
         lambda_lim,
         a_eff_interpol,
-        t_obs)
-    return power_law(energy, f_0, gamma)
+        t_obs,
+        e_0
+        )
+    return power_law(energy, f_0, gamma, e_0)
 
 
 def integral_spectral_exclusion_zone_parameters(

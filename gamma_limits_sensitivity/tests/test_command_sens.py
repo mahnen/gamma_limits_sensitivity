@@ -58,6 +58,7 @@ def test_get_sens_spectrum_figure():
             alpha=0.2,
             t_obs=10.*3600,
             a_eff_interpol=a_eff_interpol,
+            e_0=1.,
             n_points_to_plot=2
             ) for a_eff_interpol in a_eff_list
         )

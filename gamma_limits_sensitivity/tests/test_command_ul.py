@@ -59,6 +59,7 @@ def test_get_ul_spectrum_figure():
             1.*3600.,
             lambda_lim,
             a_eff_interpol,
+            e_0=1.,
             n_points_to_plot=2) for a_eff_interpol in a_eff_list)
         )
 

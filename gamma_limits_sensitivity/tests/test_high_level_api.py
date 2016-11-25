@@ -57,6 +57,7 @@ def test_high_level_api_ul():
         t_obs=1*3600,
         lambda_lim=15.,
         a_eff=a_eff_path,
+        e_0=3.3,
         plot_resolution=3
         )
 
@@ -78,6 +79,7 @@ def test_high_level_api_sens():
         alpha=0.2,
         t_obs=10*3600,
         a_eff=a_eff_path,
+        e_0=2.2,
         plot_resolution=3
         )
 
@@ -102,7 +104,7 @@ def test_high_level_api_predict():
         df_0=1e-13,
         gamma=-2.6,
         dgamma=0.2,
-        e_0=1.,  # in TeV
+        e_0=1.1,  # in TeV
         a_eff=a_eff_path,
         plot_resolution=3
         )
