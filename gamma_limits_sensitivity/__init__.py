@@ -788,9 +788,9 @@ def plot_sensitive_energy(a_eff_interpol):
     '''
     fill a sensitive energy plot figure
     '''
-    alpha_range = [-6., -0.5]
+    gamma_range = [-6., -0.5]
     stepsize = 0.1
-    gammas = np.arange(alpha_range[0], alpha_range[1]+stepsize, stepsize)
+    gammas = np.arange(gamma_range[0], gamma_range[1]+stepsize, stepsize)
     e_sens = np.array([sensitive_energy(i, a_eff_interpol) for i in gammas])
 
     plt.plot(gammas, e_sens, 'k')
@@ -1123,7 +1123,7 @@ def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     estimated_rate_in_on = sigma_s + sigma_bg
 
     t_obs_min = 0.
-    t_obs_max = 36e7  # more than 100k h is likely unrealistic
+    t_obs_max = 36e8  # more than 1000k h is likely unrealistic
 
     try:
         t_obs = brentq(lambda x: (
@@ -1151,7 +1151,7 @@ def sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.):
     estimated_bg_counts_in_on = sigma_bg * t_obs
 
     sigma_lim_min = 0.
-    sigma_lim_max = 1e3  # more than 1k gamma / s is likely unrealistic
+    sigma_lim_max = 1e5  # more than 100k gamma / s is likely unrealistic
 
     # catch signal rates which will never be measured
     try:
