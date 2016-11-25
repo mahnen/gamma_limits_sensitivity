@@ -301,3 +301,12 @@ def test_plot_source_emission_spectrum_with_uncertainties():
         energy_range)
 
     assert isinstance(figure, matplotlib.figure.Figure)
+
+
+def test_get_useful_e_0():
+    a_eff_list = get_effective_area_list()
+
+    # in this case I want it to be 1 TeV
+    for a_eff in a_eff_list:
+        e_0 = gls.get_useful_e_0(a_eff)
+        assert e_0 == 1.0

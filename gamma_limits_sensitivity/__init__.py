@@ -652,6 +652,18 @@ def sensitive_energy(gamma, a_eff_interpol):
     return np.exp(mu)
 
 
+def get_useful_e_0(a_eff_interpol):
+    '''
+    This function will try to yield a useful e_0
+    value for anchoring the power law on.
+    This is calculated from the effective area definition range
+    '''
+
+    # round to the next order of magnitude
+    log10_e_0_suggestion = round(mean_log10_energy(a_eff_interpol), 0)
+    return 10**(log10_e_0_suggestion) / 10
+
+
 def get_gamma_from_sensitive_energy(E_sens, a_eff_interpol):
     '''
     numerical inverse of the sensitive energy
@@ -712,6 +724,33 @@ def ln_energy_weighted(gamma, a_eff_interpol):
         limit=1000,
         full_output=1
         )[0]
+
+
+def mean_log10_energy(a_eff_interpol):
+    '''
+    For calculating mean of the log10 of the energy
+    over the effective area, to estimate a useful e_0
+    '''
+    energy_range = get_energy_range(a_eff_interpol)
+    integrand_numerator = lambda x: a_eff_interpol(np.log10(x))*np.log10(x)
+    integrand_denominator = lambda x: a_eff_interpol(np.log10(x))
+
+    numerator = integrate.quad(
+        integrand_numerator,
+        energy_range[0],
+        energy_range[1],
+        limit=1000,
+        full_output=1
+        )[0]
+    denominator = integrate.quad(
+        integrand_denominator,
+        energy_range[0],
+        energy_range[1],
+        limit=1000,
+        full_output=1
+        )[0]
+
+    return numerator/denominator
 
 
 def power_law(energy, f_0, gamma, e_0=1.):
