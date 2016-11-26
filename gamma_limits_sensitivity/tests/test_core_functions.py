@@ -80,9 +80,6 @@ def test_sensitive_energy():
     assert sensitive_e > 0.1
 
 
-
-
-
 def test_inverse_sensitive_energy():
     '''
     Test if the calculation of the inverse
@@ -307,10 +304,12 @@ def test_plot_source_emission_spectrum_with_uncertainties():
 
 
 def test_get_useful_e_0():
+    '''
+    This tests if the get_useful_e_0 function
+    returns sensible values
+    '''
     a_eff_list = get_effective_area_list()
 
-    # in this case I want it to be 1 TeV
-    # or 
     for a_eff in a_eff_list:
         e_0 = gls.get_useful_e_0(a_eff)
-        assert (e_0 == 1.0 or e_0 == 0.1 or e_0 == 100000.0)
+        assert e_0 in [0.1, 1.0, 100000.0]

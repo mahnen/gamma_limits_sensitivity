@@ -438,19 +438,22 @@ def get_predict_spectrum_figure(
     )
 
     energy_x, dn_de_y0 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[0], a_eff_interpol, n_points_to_plot, e_0, 'k:'
+        sigma_bg,
+        alpha, t_obs_est[0], a_eff_interpol, n_points_to_plot, e_0, 'k:'
         )
     __a, dn_de_y1 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[1], a_eff_interpol, n_points_to_plot, e_0, 'k'
+        sigma_bg,
+        alpha, t_obs_est[1], a_eff_interpol, n_points_to_plot, e_0, 'k'
         )
     __a, dn_de_y2 = plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs_est[2], a_eff_interpol, n_points_to_plot, e_0, 'k:'
+        sigma_bg,
+        alpha, t_obs_est[2], a_eff_interpol, n_points_to_plot, e_0, 'k:'
         )
 
     # correct the title time to detection
-    median_string_num = '{0:3.3f}'.format(t_obs_est[1]/3600.)
-    plus_string_num = '{0:3.3f}'.format((t_obs_est[2]-t_obs_est[1])/3600.)
-    minus_string_num = '{0:3.3f}'.format((t_obs_est[1]-t_obs_est[0])/3600.)
+    median_string_num = '{0:3.3e}'.format(t_obs_est[1]/3600.)
+    plus_string_num = '{0:3.3e}'.format((t_obs_est[2]-t_obs_est[1])/3600.)
+    minus_string_num = '{0:3.3e}'.format((t_obs_est[1]-t_obs_est[0])/3600.)
 
     plusminus_string = (r't$_{est}$ = (' +
                         median_string_num +
@@ -680,15 +683,12 @@ def get_gamma_from_sensitive_energy(E_sens, a_eff_interpol):
     gamma_min = -30.
     gamma_max = -0.05
 
-    #try:
     gamma_num = brentq(lambda x: (sensitive_energy(
             gamma=x,
             a_eff_interpol=a_eff_interpol
             ) - E_sens
         ), gamma_min, gamma_max
     )
-    #except:
-    #    gamma_num = 0.
 
     return gamma_num
 
@@ -709,7 +709,9 @@ def effective_area_averaged_flux(gamma, e_0, a_eff_interpol):
         energy_range[0],
         energy_range[1],
         limit=10000,
-        full_output=1)[0]
+        full_output=1,
+        points=[energy_range[0], energy_range[0]*10]
+        )[0]
 
 
 def ln_energy_weighted(gamma, a_eff_interpol):
@@ -731,7 +733,8 @@ def ln_energy_weighted(gamma, a_eff_interpol):
         energy_range[0],
         energy_range[1],
         limit=10000,
-        full_output=1
+        full_output=1,
+        points=[energy_range[0], energy_range[0]*10]
         )[0]
 
 
@@ -749,14 +752,16 @@ def mean_log10_energy(a_eff_interpol):
         energy_range[0],
         energy_range[1],
         limit=10000,
-        full_output=1
+        full_output=1,
+        points=[energy_range[0], energy_range[0]*10]
         )[0]
     denominator = integrate.quad(
         integrand_denominator,
         energy_range[0],
         energy_range[1],
         limit=10000,
-        full_output=1
+        full_output=1,
+        points=[energy_range[0], energy_range[0]*10]
         )[0]
 
     return numerator/denominator
@@ -843,7 +848,7 @@ def plot_ul_spectrum_figure(
     plt.plot(energy_x, dn_de_y, fmt)
     plt.loglog()
     plt.title('Integral Spectral Exclusion Zone, t' +
-              ('={0:1.1f} h'.format(t_obs/3600.)))
+              ('={0:1.1e} h'.format(t_obs/3600.)))
     plt.xlabel('E / TeV')
     plt.ylabel('dN/dE / [(cm$^2$ s TeV)$^{-1}$]')
 
@@ -912,7 +917,7 @@ def plot_lambda_s_mesh(
     plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
 
     plt.title(
-        'signal counts per {0:1.1f} h, E$_0$={1:1.1f} TeV assuming power law'.
+        'signal counts per {0:1.1e} h, E$_0$={1:1.1e} TeV assuming power law'.
         format(t_obs/3600., e_0)
         )
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
@@ -983,10 +988,10 @@ def plot_t_obs_mesh(
         colors=colors
         )
 
-    plt.clabel(cset, inline=True, fmt='%1.1f', fontsize=10)
+    plt.clabel(cset, inline=True, fmt='%1.1e', fontsize=10)
 
     plt.title(
-        'time to detection in h, E$_0$={0:1.1f} TeV assuming power law'.
+        'time to detection in h, E$_0$={0:1.1e} TeV assuming power law'.
         format(e_0)
         )
     plt.xlabel('$f_0$ / [(cm$^2$ s TeV)$^{-1}$]')
@@ -1139,19 +1144,19 @@ def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     t_obs_min = 0.
     t_obs_max = 36e16
 
-    #try:
-    t_obs = brentq(lambda x: (
-        li_ma_significance(
-            estimated_rate_in_on*x,
-            estimated_rate_in_off*x,
-            alpha
-            ) - threshold
-        ), t_obs_min, t_obs_max)
-    #except ValueError:
-    #    raise ValueError('The time to detection could not be calculated. '
-    #                     'This can be the case when sigma_bg is overestimated.'
-    #                     ' Please check that your stated background rate'
-    #                     ' is actually given as: sigma_bg / s')
+    try:
+        t_obs = brentq(lambda x: (
+            li_ma_significance(
+                estimated_rate_in_on*x,
+                estimated_rate_in_off*x,
+                alpha
+                ) - threshold
+            ), t_obs_min, t_obs_max)
+    except ValueError:
+        raise ValueError('The time to detection could not be calculated. '
+                         'This can be the case when sigma_bg is overestimated.'
+                         ' Please check that your stated background rate'
+                         ' is actually given as: sigma_bg / s')
 
     return t_obs
 
@@ -1167,8 +1172,6 @@ def sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.):
     sigma_lim_min = 0.
     sigma_lim_max = 1e5  # more than 100k gamma / s is likely unrealistic
 
-    # catch signal rates which will never be measured
-    #try:
     sigma_lim = brentq(lambda x: (
         li_ma_significance(
             x*t_obs + estimated_bg_counts_in_on,
@@ -1176,8 +1179,6 @@ def sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.):
             alpha
             ) - threshold
         ), sigma_lim_min, sigma_lim_max)
-    #except:
-    #    sigma_lim = 0.
 
     # implement the low statistics limit which most authors use:
     #   "at least 10 excess counts"
