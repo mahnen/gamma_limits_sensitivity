@@ -37,7 +37,7 @@ def test_get_sens_phasespace_figure():
     sens_phasespace_figures = [gls.get_sens_phasespace_figure(
         sigma_bg=10./3600.,
         alpha=0.2,
-        t_obs=10.*3600,
+        t_obs=100.*3600,
         a_eff_interpol=a_eff_interpol,
         pixels_per_line=2
         ) for a_eff_interpol in a_eff_list]

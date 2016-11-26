@@ -221,7 +221,9 @@ def get_effective_area_test_relative_paths():
     a_eff_test_relative_paths = [
         '/resources/A_eff/MAGIC_lowZd_Ecut_300GeV.dat',
         '/resources/A_eff/MAGIC_medZd_Ecut_300GeV.dat',
-        '/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
+        '/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat',
+        '/resources/A_eff/uhe_test_aperture.dat',
+        '/resources/A_eff/AeffEnergy_P8R2_OnAxis_Total.dat'
     ]
     return a_eff_test_relative_paths
 
@@ -678,15 +680,15 @@ def get_gamma_from_sensitive_energy(E_sens, a_eff_interpol):
     gamma_min = -30.
     gamma_max = -0.05
 
-    try:
-        gamma_num = brentq(lambda x: (sensitive_energy(
-                gamma=x,
-                a_eff_interpol=a_eff_interpol
-                ) - E_sens
-            ), gamma_min, gamma_max
-        )
-    except:
-        gamma_num = 0.
+    #try:
+    gamma_num = brentq(lambda x: (sensitive_energy(
+            gamma=x,
+            a_eff_interpol=a_eff_interpol
+            ) - E_sens
+        ), gamma_min, gamma_max
+    )
+    #except:
+    #    gamma_num = 0.
 
     return gamma_num
 
@@ -1135,21 +1137,21 @@ def t_obs_li_ma_criterion(sigma_s, sigma_bg, alpha, threshold=5.):
     estimated_rate_in_on = sigma_s + sigma_bg
 
     t_obs_min = 0.
-    t_obs_max = 36e8  # more than 1000k h is likely unrealistic
+    t_obs_max = 36e16
 
-    try:
-        t_obs = brentq(lambda x: (
-            li_ma_significance(
-                estimated_rate_in_on*x,
-                estimated_rate_in_off*x,
-                alpha
-                ) - threshold
-            ), t_obs_min, t_obs_max)
-    except ValueError:
-        raise ValueError('The time to detection could not be calculated. '
-                         'This can be the case when sigma_bg is overestimated.'
-                         ' Please check that your stated background rate'
-                         ' is actually given as: sigma_bg / s')
+    #try:
+    t_obs = brentq(lambda x: (
+        li_ma_significance(
+            estimated_rate_in_on*x,
+            estimated_rate_in_off*x,
+            alpha
+            ) - threshold
+        ), t_obs_min, t_obs_max)
+    #except ValueError:
+    #    raise ValueError('The time to detection could not be calculated. '
+    #                     'This can be the case when sigma_bg is overestimated.'
+    #                     ' Please check that your stated background rate'
+    #                     ' is actually given as: sigma_bg / s')
 
     return t_obs
 
@@ -1166,16 +1168,16 @@ def sigma_lim_li_ma_criterion(sigma_bg, alpha, t_obs, threshold=5.):
     sigma_lim_max = 1e5  # more than 100k gamma / s is likely unrealistic
 
     # catch signal rates which will never be measured
-    try:
-        sigma_lim = brentq(lambda x: (
-            li_ma_significance(
-                x*t_obs + estimated_bg_counts_in_on,
-                estimated_bg_counts_in_off,
-                alpha
-                ) - threshold
-            ), sigma_lim_min, sigma_lim_max)
-    except:
-        sigma_lim = 0.
+    #try:
+    sigma_lim = brentq(lambda x: (
+        li_ma_significance(
+            x*t_obs + estimated_bg_counts_in_on,
+            estimated_bg_counts_in_off,
+            alpha
+            ) - threshold
+        ), sigma_lim_min, sigma_lim_max)
+    #except:
+    #    sigma_lim = 0.
 
     # implement the low statistics limit which most authors use:
     #   "at least 10 excess counts"
