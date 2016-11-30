@@ -63,7 +63,7 @@ import gamma_limits_sensitivity as gls
 a_eff_file = 'gamma_limits_sensitivity/resources/A_eff/VERITAS_V5_lowZd_McCutcheon.dat'
 l_lim = 11.3
 t_obs = 25200
-result_dict = gls.upper_limit(lambda_lim=l_lim, t_obs=t_obs, a_eff=a_eff_file)
+result_dict = gls.upper_limit(lambda_lim=l_lim, t_obs=t_obs, a_eff=a_eff_file, e_0=1.)
 
 result_dict['plots']['ul_sensitive_energy'].show()
 ```
