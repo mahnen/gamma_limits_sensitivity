@@ -774,7 +774,7 @@ def power_law(energy, f_0, gamma, e_0=1.):
     return f_0*(energy/e_0)**(gamma)
 
 
-def plot_effective_area(a_eff_interpol):
+def plot_effective_area(a_eff_interpol, style='k', label=''):
     '''
     fill a plot with the effective energy from the supplied
     interpolated data
@@ -789,7 +789,9 @@ def plot_effective_area(a_eff_interpol):
         for energy
         in energy_samples
         ])
-    plt.plot(np.power(10, energy_samples), area_samples/10000., 'k')
+    plt.plot(np.power(10, energy_samples), area_samples/10000.,
+             style,
+             label=label)
 
     plt.loglog()
     plt.title('Effective Area')
