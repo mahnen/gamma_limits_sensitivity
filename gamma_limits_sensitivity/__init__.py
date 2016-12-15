@@ -820,7 +820,7 @@ def plot_sensitive_energy(a_eff_interpol):
 
 
 def plot_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot, fmt='k'
+        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot, fmt='k', legend=''
         ):
     '''
     fill a ul spectrum figure with the integral spectral exclusion zone plot
@@ -847,7 +847,7 @@ def plot_ul_spectrum_figure(
                ]
     dn_de_y = np.array(dn_de_y)
 
-    plt.plot(energy_x, dn_de_y, fmt)
+    plt.plot(energy_x, dn_de_y, fmt, legend=legend)
     plt.loglog()
     plt.title('Integral Spectral Exclusion Zone, t' +
               ('={0:1.1e} h'.format(t_obs/3600.)))
@@ -858,7 +858,7 @@ def plot_ul_spectrum_figure(
 
 
 def plot_sens_spectrum_figure(
-        sigma_bg, alpha, t_obs, a_eff_interpol, e_0, n_points_to_plot, fmt='k'
+        sigma_bg, alpha, t_obs, a_eff_interpol, e_0, n_points_to_plot, fmt='k', legend=''
         ):
     '''
     fill a spectrum figure with the sensitivity
@@ -870,7 +870,8 @@ def plot_sens_spectrum_figure(
         a_eff_interpol,
         e_0,
         n_points_to_plot,
-        fmt=fmt)
+        fmt=fmt,
+        legend=legend)
 
     return energy_x, dn_de_y
 
