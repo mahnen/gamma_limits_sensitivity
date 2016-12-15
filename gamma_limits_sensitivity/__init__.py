@@ -820,7 +820,7 @@ def plot_sensitive_energy(a_eff_interpol):
 
 
 def plot_ul_spectrum_figure(
-        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot, fmt='k', legend=''
+        t_obs, lambda_lim, a_eff_interpol, e_0, n_points_to_plot, fmt='k', label=''
         ):
     '''
     fill a ul spectrum figure with the integral spectral exclusion zone plot
