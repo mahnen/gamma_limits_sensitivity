@@ -7,7 +7,7 @@ setup(
     url='https://github.com/mahnen/gamma_limits_sensitivity',
     author='Max Ahnen',
     author_email='m.knoetig@gmail.com',
-    licence='MIT',
+    license='MIT',
     packages=[
         'gamma_limits_sensitivity'
     ],
