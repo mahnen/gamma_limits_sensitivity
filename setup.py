@@ -17,12 +17,12 @@ setup(
             'gamma_limits_sensitivity = gamma_limits_sensitivity.__main__:main'
         ]
     },
-    install_requires={
+    install_requires=[
         'numpy',
         'scipy',
         'matplotlib',
         'docopt',
         'corner'
-    },
+    ],
     tests_require=['pytest']
 )
